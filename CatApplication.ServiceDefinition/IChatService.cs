@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ChatApplication.ServiceDefinition;
-internal interface IChatService
+public interface IChatService : IService<IChatService>
 { 
+    public void PostComment(string comment);
+
+    public UnaryResult<List<string>> ShowCommentArchive();
 }
