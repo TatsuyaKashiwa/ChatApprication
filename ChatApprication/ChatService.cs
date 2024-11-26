@@ -3,6 +3,7 @@ using Grpc.Core;
 using MagicOnion;
 using MagicOnion.Server;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ChatApprication.Service;
 
@@ -17,12 +18,13 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     //HttpContextを使うなら別なstaticな変数に保持すること
     //Listであればpairを用いる or ディクショナリにタイムスタンプを含める。
     private List<CommentClient> _commentList = new();
-    public void PostComment(ServerCallContext clientContext, string comment)
+    public async UnaryResult<char> PostComment(ServerCallContext clientContext, string comment)
     {
         var httpContext = clientContext.GetHttpContext();
         var sessionID = httpContext.Session.ToString();
         var commentClient = new CommentClient() { SessionID = sessionID, Comment = comment };
         _commentList.Add(commentClient);
+        return 's';
     }
 
     public async UnaryResult<List<string>> ShowCommentArchive() 
