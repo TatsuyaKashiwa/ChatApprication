@@ -34,15 +34,8 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     public async UnaryResult<List<string>> ShowCommentArchive() 
     {
-        //LINQを用いなかったもの
-        List<string> comments = new();   
-        foreach (var comment in _commentList) 
-        {
-            comments.Add(comment.Comment);
-        }
-        return comments;
-        //return _commentList
-        //    .Select(x=>x.Comment)
-        //    .ToList();
+        return _commentList
+            .Select(x=>x.Comment)
+            .ToList();
     }
 }
