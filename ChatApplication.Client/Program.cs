@@ -1,6 +1,7 @@
 ﻿using Grpc.Net.Client;
 using MagicOnion.Client;
 using ChatApplication.ServiceDefinition;
+using System.Threading.Channels;
 
 namespace ChatApplication.Client;
 
@@ -8,9 +9,9 @@ internal class Program
 {
     internal static async Task Main(string[] args)
     {
-        var channnel = GrpcChannel.ForAddress("https://localhost:7101");
+        var channel = GrpcChannel.ForAddress("https://localhost:7101");
 
-        var client = MagicOnionClient.Create<IChatService>(channnel);
+        var client = MagicOnionClient.Create<IChatService>(channel);
 
         while (true) 
         {
