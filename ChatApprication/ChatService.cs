@@ -20,9 +20,9 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     //Client(あるいはDuplex)Streamingではメソッド内に結果を受ける変数,Collectionを入れるのでコメント化
     //private static List<CommentClient> _commentList = new();
     //IDを固定してテスト
-    public async Task<ClientStreamingResult<string, List<string>>> SaveAndShowComment()
+    public async Task<ClientStreamingResult<string, List<string>>> SaveAndShowCommentAsync()
     {
-        var context = this.GetClientStreamingContext<string, List<string>>();
+        var streaming = this.GetClientStreamingContext<string, List<string>>();
         List<CommentClient> commentList = new();
         //以下五行Unaryの書式なのでコメントアウト
         //var httpContext = clientContext.GetHttpContext();
@@ -30,7 +30,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         //var commentClient = new CommentClient() { SessionID = 1, Comment = comment };
         //_commentList.Add(commentClient);
         //return 's';
-        await context.ForEachAsync(x =>
+        await streaming.ForEachAsync(x =>
         {
             var commentClient = new CommentClient() { SessionID = 1, Comment = x };
             commentList.Add(commentClient);
@@ -40,13 +40,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
             .Select(x => x.Comment)
             .ToList();
 
-        return context.Result(returnComment);
+        return streaming.Result(returnComment);
     }
 
-    public async UnaryResult<List<string>> ShowCommentArchive() 
-    {
-        return _commentList
-            .Select(x=>x.Comment)
-            .ToList();
-    }
 }
