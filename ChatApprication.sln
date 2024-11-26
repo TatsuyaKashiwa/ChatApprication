@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35514.174 d17.12
+VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApprication", "ChatApprication\ChatApprication.csproj", "{571E8ECE-D21E-4039-B746-FEF51174F0E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApprication.Service", "ChatApprication\ChatApprication.Service.csproj", "{571E8ECE-D21E-4039-B746-FEF51174F0E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApplication.ServiceDefinition", "CatApplication.ServiceDefinition\ChatApplication.ServiceDefinition.csproj", "{FA7BA3DC-427E-4E09-852B-89BFC3618817}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{571E8ECE-D21E-4039-B746-FEF51174F0E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{571E8ECE-D21E-4039-B746-FEF51174F0E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{571E8ECE-D21E-4039-B746-FEF51174F0E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA7BA3DC-427E-4E09-852B-89BFC3618817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA7BA3DC-427E-4E09-852B-89BFC3618817}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA7BA3DC-427E-4E09-852B-89BFC3618817}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA7BA3DC-427E-4E09-852B-89BFC3618817}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
