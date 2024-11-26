@@ -4,6 +4,7 @@ using MagicOnion;
 using MagicOnion.Server;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.Serialization;
 using System.Xml.Linq;
 
 namespace ChatApprication.Service;
@@ -23,6 +24,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     public async Task<ClientStreamingResult<string, List<string>>> SaveAndShowCommentAsync()
     {
         var streaming = this.GetClientStreamingContext<string, List<string>>();
+        var id = streaming.GetHashCode();
         List<CommentClient> commentList = new();
         //以下五行Unaryの書式なのでコメントアウト
         //var httpContext = clientContext.GetHttpContext();
@@ -32,7 +34,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         //return 's';
         await streaming.ForEachAsync(x =>
         {
-            var commentClient = new CommentClient() { SessionID = 1, Comment = x };
+            var commentClient = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
             commentList.Add(commentClient);
         });
 
