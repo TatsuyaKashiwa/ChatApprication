@@ -19,18 +19,22 @@ internal class Program
             var description = Console.ReadLine();
             if (description.Equals("archive"))
             {
-                await streaming.RequestStream.CompleteAsync();
+                //await streaming
+                //    .RequestStream.
+                //    CompleteAsync();
 
-                var commentList = await streaming.ResponseAsync;
+                var comments = await streaming.ResponseAsync;
 
-                foreach (var comment in commentList)
-                {
-                    Console.WriteLine(comment);
-                }
+                //foreach (var comment in comments)
+                //{
+                //    Console.WriteLine(comment);
+                //}
             }
             else
             {
-                await streaming.RequestStream.WriteAsync(description);
+                await streaming
+                    .RequestStream
+                    .WriteAsync(description);
             }
         }
     }

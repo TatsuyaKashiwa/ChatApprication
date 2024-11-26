@@ -14,22 +14,25 @@ public record CommentClient
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
 
-    public async Task<ClientStreamingResult<string, List<string>>> SaveAndShowCommentAsync()
+    public async Task<ClientStreamingResult<string, bool>> SaveAndShowCommentAsync()
     {
         var streaming = this.GetClientStreamingContext<string, List<string>>();
         var id = streaming.GetHashCode();
-        List<CommentClient> commentList = new();
+        List<CommentClient> comments = new();
         await streaming.ForEachAsync(x =>
         {
-            var commentClient = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
-            commentList.Add(commentClient);
+            var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
+            comments.Add(idAndCommnet);
         });
 
-        var returnComment = commentList
-            .Select(x => x.Comment)
-            .ToList();
+        //var returnComments = comments
+        //    .Select(x => x.Comment)
+        //    .ToList();
 
-        return streaming.Result(returnComment);
+        //boolを返すには？
+        return streaming.Result(true);
     }
+
+    //streaming.Result(returnComments)
 
 }
