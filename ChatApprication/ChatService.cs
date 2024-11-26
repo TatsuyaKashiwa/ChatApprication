@@ -16,7 +16,8 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     public async Task<ClientStreamingResult<string, bool>> SaveAndShowCommentAsync()
     {
-        var streaming = this.GetClientStreamingContext<string, List<string>>();
+        //型を確認すること！
+        var streaming = this.GetClientStreamingContext<string,bool>();
         var id = streaming.GetHashCode();
         List<CommentClient> comments = new();
         await streaming.ForEachAsync(x =>
@@ -30,7 +31,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         //    .ToList();
 
         //boolを返すには？
-        return streaming.Result(true);
+        return streaming.Result(false);
     }
 
     //streaming.Result(returnComments)

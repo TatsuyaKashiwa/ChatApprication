@@ -1,6 +1,7 @@
 ﻿using ChatApplication.ServiceDefinition;
 using Grpc.Net.Client;
 using MagicOnion.Client;
+using System.Xml.Linq;
 
 namespace ChatApplication.Client;
 
@@ -13,7 +14,9 @@ internal class Program
         var client = MagicOnionClient.Create<IChatService>(channel);
         var streaming = await client.SaveAndShowCommentAsync();
 
-        while (true)
+        var canContinue = true;
+
+        while (canContinue)
         {
             Console.WriteLine("コメントを入力してください。\n履歴を表示させたい場合はarchiveを入力してください");
             var description = Console.ReadLine();
@@ -23,12 +26,20 @@ internal class Program
                 //    .RequestStream.
                 //    CompleteAsync();
 
-                var comments = await streaming.ResponseAsync;
+                //var comments = await streaming.ResponseAsync;
 
                 //foreach (var comment in comments)
                 //{
                 //    Console.WriteLine(comment);
                 //}
+            }
+            if (description.Equals("finish")) 
+            {
+                await streaming
+                    .RequestStream.
+                    CompleteAsync();
+                canContinue = await streaming.ResponseAsync;
+                Console.WriteLine("終了しました");
             }
             else
             {
