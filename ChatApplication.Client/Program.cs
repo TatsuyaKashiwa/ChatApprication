@@ -12,14 +12,18 @@ internal class Program
         var channel = GrpcChannel.ForAddress("https://localhost:7101");
 
         var client = MagicOnionClient.Create<IChatService>(channel);
+        var streaming = await client.SaveAndShowCommentAsync();
 
         while (true) 
         {
             Console.WriteLine("コメントを入力してください。\n履歴を表示させたい場合はarchiveを入力してください");
-            var selection  = Console.ReadLine();
-            if (selection.Equals("archive"))
+            var description  = Console.ReadLine();
+            if (description.Equals("archive"))
             {
-                var commentList = await client.ShowCommentArchive();
+                await streaming.RequestStream.CompleteAsync();
+
+                var commentList = await streaming.ResponseAsync;
+
                 foreach (var comment in commentList)
                 {
                     Console.WriteLine(comment);
@@ -27,7 +31,7 @@ internal class Program
             }
             else 
             {
-                var succession = await client.PostComment(1,selection);
+                await streaming.RequestStream.WriteAsync(description);
             }
         }
     }
