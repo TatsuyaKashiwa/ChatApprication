@@ -19,17 +19,17 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     public async Task<ClientStreamingResult<string, bool>> SaveAndShowCommentAsync()
     {
-        var streaming = this.GetClientStreamingContext<string, bool>();
+        var context = this.GetClientStreamingContext<string, bool>();
 
-        var id = streaming.GetHashCode();
+        var id = context.GetHashCode();
 
-        //await streaming.ForEachAsync(x =>
+        //await context.ForEachAsync(x =>
         //    {
         //        var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
         //        comments.Add(idAndCommnet);
         //    });
 
-        await streaming.ForEachAsync(x =>
+        await context.ForEachAsync(x =>
         {
             var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
             _locker.EnterWriteLock();
@@ -45,7 +45,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
         try 
         { 
-            return streaming.Result(false);
+            return context.Result(false);
         }
         finally
         {
