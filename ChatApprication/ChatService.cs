@@ -1,13 +1,10 @@
 ﻿using ChatApplication.ServiceDefinition;
-using Grpc.Core;
 using MagicOnion;
 using MagicOnion.Server;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 
 namespace ChatApprication.Service;
 
-public record CommentClient 
+public record CommentClient
 {
     //public required string SessionID { get; init; }
     public required int SessionID { get; init; }
@@ -16,26 +13,75 @@ public record CommentClient
 
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
+    private static ReaderWriterLockSlim _locker = new ReaderWriterLockSlim();
+    static List<CommentClient> comments = new();
 
-    //HttpContextを使うなら別なstaticな変数に保持すること
-    //Listであればpairを用いる or ディクショナリにタイムスタンプを含める。
-    private static List<CommentClient> _commentList = new();
-    //IDを固定してテストするためコメント化
-    //public async UnaryResult<char> PostComment(ServerCallContext clientContext, string comment)
-    public async UnaryResult<char> PostComment(int id, string comment)
+
+    public async Task<ClientStreamingResult<string, bool>> SaveAndShowCommentAsync()
     {
-        //下2行IDをCLからの定数でテストするためコメント化
-        //var httpContext = clientContext.GetHttpContext();
-        //var sessionID = httpContext.Session.ToString();
-        var commentClient = new CommentClient() { SessionID = id, Comment = comment };
-        _commentList.Add(commentClient);
-        return 's';
+        var context = this.GetClientStreamingContext<string, bool>();
+
+        var id = context.GetHashCode();
+
+        //await context.ForEachAsync(x =>
+        //    {
+        //        var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
+        //        comments.Add(idAndCommnet);
+        //    });
+
+        await context.ForEachAsync(x =>
+        {
+            var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
+            _locker.EnterWriteLock();
+            try
+            {
+                comments.Add(idAndCommnet);
+            }
+            finally
+            {
+                _locker.ExitWriteLock();
+            }
+        });
+
+        try 
+        { 
+            return context.Result(false);
+        }
+        finally
+        {
+            _locker.Dispose();
+        }
     }
 
-    public async UnaryResult<List<string>> ShowCommentArchive() 
+
+
+    public async UnaryResult<List<string>> GetArchiveAsync()
     {
-        return _commentList
-            .Select(x=>x.Comment)
+        _locker.EnterReadLock();
+        try 
+        {
+            return comments
+            .Select(x => x.Comment)
             .ToList();
+        }
+        finally
+        { 
+            _locker.ExitReadLock();
+        }
+        //List<string> returnComments;
+        //_locker.EnterReadLock();
+        //try
+        //{
+        //    _locker.EnterReadLock();
+        //    returnComments = comments
+        //    .Select(x => x.Comment)
+        //    .ToList();
+        //}
+        //finally
+        //{
+        //    _locker.ExitReadLock();
+        //}
+        //return returnComments;
     }
+
 }
