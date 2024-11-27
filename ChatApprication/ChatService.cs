@@ -13,35 +13,30 @@ public record CommentClient
 
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
-    //static List<CommentClient> comments = new();
+    private static ReaderWriterLockSlim _locker = new ReaderWriterLockSlim();
+    static List<CommentClient> comments = new();
 
-    public async Task<ClientStreamingResult<string, List<string>>> SaveAndShowCommentAsync()
+    public async Task<ClientStreamingResult<string, bool>> SaveAndShowCommentAsync()
     {
-        //型を確認すること！
-        var streaming = this.GetClientStreamingContext<string, List<string>>();
+        //[TODO]型を確認すること！
+        var streaming = this.GetClientStreamingContext<string, bool>();
         var id = streaming.GetHashCode();
-        List<CommentClient> comments = new();
         await streaming.ForEachAsync(x =>
         {
             var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
             comments.Add(idAndCommnet);
         });
 
-        
-
-        var returnComments = comments
-            .Select(x => x.Comment)
-            .ToList();
-
-        //boolを返すには？
-        return streaming.Result(returnComments);
+        return streaming.Result(false);
     }
 
     //streaming.Result(returnComments)
 
-    public async UnaryResult<string> GetArchive() 
+    public async UnaryResult<List<string>> GetArchiveAsync() 
     {
-        return "abcde";
+        return comments
+            .Select(x => x.Comment)
+            .ToList();
     }
 
 }

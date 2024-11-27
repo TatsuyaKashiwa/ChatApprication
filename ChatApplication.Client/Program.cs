@@ -22,36 +22,16 @@ internal class Program
             var description = Console.ReadLine();
             if (description.Equals("archive"))
             {
-                var comments = await client.GetArchive();
+                var comments = await client.GetArchiveAsync();
                 foreach (var comment in comments) 
                 {
                     Console.WriteLine(comment);
                 }
-                //await streaming
-                //    .RequestStream.
-                //    CompleteAsync();
-
-                //var comments = await streaming.ResponseAsync;
-
-                //foreach (var comment in comments)
-                //{
-                //    Console.WriteLine(comment);
-                //}
             }
-            if (description.Equals("finish")) 
+            else if (description.Equals("finish")) 
             {
-                await streaming
-                    .RequestStream.
-                    CompleteAsync();
-                //canContinue = await streaming.ResponseAsync;
-                var comments = await streaming.ResponseAsync;
-
-                foreach (var comment in comments)
-                    {
-                        Console.WriteLine(comment);
-                    }
-
-                    canContinue = false;
+                await streaming.RequestStream.CompleteAsync();
+                canContinue = await streaming.ResponseAsync;
                 Console.WriteLine("終了しました");
             }
             else

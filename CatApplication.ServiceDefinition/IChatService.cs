@@ -3,7 +3,7 @@
 namespace ChatApplication.ServiceDefinition;
 public interface IChatService : IService<IChatService>
 {
-    public Task<ClientStreamingResult<string, List<string>>> SaveAndShowCommentAsync();
+    public Task<ClientStreamingResult<string, bool>> SaveAndShowCommentAsync();
 
-    public UnaryResult<string> GetArchive();
+    public UnaryResult<List<string>> GetArchiveAsync();
 }
