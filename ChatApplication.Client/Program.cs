@@ -12,13 +12,13 @@ internal class Program
         var channel = GrpcChannel.ForAddress("https://localhost:7101");
 
         var client = MagicOnionClient.Create<IChatService>(channel);
-        var streaming = await client.SaveAndShowCommentAsync();
+        var streaming = await client.SaveCommentAsync();
 
         var canContinue = true;
 
         while (canContinue)
         {
-            Console.WriteLine("コメントを入力してください。\n履歴を表示させたい場合はarchiveを入力してください");
+            Console.WriteLine("コメントを入力してください。\n履歴を表示させたい場合はarchiveを\n終了したい場合はfinishを入力してください");
             var description = Console.ReadLine();
             if (description.Equals("archive"))
             {
