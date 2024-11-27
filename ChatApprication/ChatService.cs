@@ -16,10 +16,6 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     private static ReaderWriterLockSlim _locker = new ReaderWriterLockSlim();
     static List<CommentClient> comments = new();
 
-    ~ChatService() 
-    {
-        _locker.Dispose();
-    }
 
     public async Task<ClientStreamingResult<string, bool>> SaveAndShowCommentAsync()
     {
@@ -32,29 +28,36 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         //        var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
         //        comments.Add(idAndCommnet);
         //    });
-       
-            await streaming.ForEachAsync(x =>
-            {
-                var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
-                try 
-                {
-                    _locker.EnterWriteLock();
-                    comments.Add(idAndCommnet);
-                }
-                finally
-                {
-                    _locker.ExitWriteLock();
-                }
-            });
-        
 
-        return streaming.Result(false);
+        await streaming.ForEachAsync(x =>
+        {
+            var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
+            _locker.EnterWriteLock();
+            try
+            {
+                comments.Add(idAndCommnet);
+            }
+            finally
+            {
+                _locker.ExitWriteLock();
+            }
+        });
+
+        try 
+        { 
+            return streaming.Result(false);
+        }
+        finally
+        {
+            _locker.Dispose();
+        }
     }
 
 
 
     public async UnaryResult<List<string>> GetArchiveAsync()
     {
+        _locker.EnterReadLock();
         try 
         {
             return comments
