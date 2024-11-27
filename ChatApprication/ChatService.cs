@@ -13,11 +13,12 @@ public record CommentClient
 
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
+    //static List<CommentClient> comments = new();
 
-    public async Task<ClientStreamingResult<string, bool>> SaveAndShowCommentAsync()
+    public async Task<ClientStreamingResult<string, List<string>>> SaveAndShowCommentAsync()
     {
         //型を確認すること！
-        var streaming = this.GetClientStreamingContext<string,bool>();
+        var streaming = this.GetClientStreamingContext<string, List<string>>();
         var id = streaming.GetHashCode();
         List<CommentClient> comments = new();
         await streaming.ForEachAsync(x =>
@@ -26,14 +27,21 @@ public class ChatService : ServiceBase<IChatService>, IChatService
             comments.Add(idAndCommnet);
         });
 
-        //var returnComments = comments
-        //    .Select(x => x.Comment)
-        //    .ToList();
+        
+
+        var returnComments = comments
+            .Select(x => x.Comment)
+            .ToList();
 
         //boolを返すには？
-        return streaming.Result(false);
+        return streaming.Result(returnComments);
     }
 
     //streaming.Result(returnComments)
+
+    public async UnaryResult<string> GetArchive() 
+    {
+        return "abcde";
+    }
 
 }

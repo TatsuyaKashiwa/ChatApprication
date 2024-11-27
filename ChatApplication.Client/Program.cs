@@ -22,6 +22,11 @@ internal class Program
             var description = Console.ReadLine();
             if (description.Equals("archive"))
             {
+                var comments = await client.GetArchive();
+                foreach (var comment in comments) 
+                {
+                    Console.WriteLine(comment);
+                }
                 //await streaming
                 //    .RequestStream.
                 //    CompleteAsync();
@@ -38,7 +43,15 @@ internal class Program
                 await streaming
                     .RequestStream.
                     CompleteAsync();
-                canContinue = await streaming.ResponseAsync;
+                //canContinue = await streaming.ResponseAsync;
+                var comments = await streaming.ResponseAsync;
+
+                foreach (var comment in comments)
+                    {
+                        Console.WriteLine(comment);
+                    }
+
+                    canContinue = false;
                 Console.WriteLine("終了しました");
             }
             else
