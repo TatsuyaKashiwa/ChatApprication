@@ -26,19 +26,26 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         var streaming = this.GetClientStreamingContext<string, bool>();
 
         var id = streaming.GetHashCode();
-        try
-        {
-            _locker.EnterWriteLock();
-            await streaming.ForEachAsync(x =>
+
+        await streaming.ForEachAsync(x =>
             {
                 var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
                 comments.Add(idAndCommnet);
             });
-        }
-        finally 
-        {
-            _locker.ExitWriteLock();
-        }
+
+        //_locker.EnterWriteLock();
+        //try
+        //{
+        //    await streaming.ForEachAsync(x =>
+        //    {
+        //        var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
+        //        comments.Add(idAndCommnet);
+        //    });
+        //}
+        //finally 
+        //{
+        //    _locker.ExitWriteLock();
+        //}
 
         return streaming.Result(false);
     }
@@ -47,19 +54,23 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     public async UnaryResult<List<string>> GetArchiveAsync() 
     {
-        List<string> returnComments;
-        try
-        {
-            _locker.EnterReadLock();
-            returnComments = comments
+        return comments
             .Select(x => x.Comment)
             .ToList();
-        }
-        finally 
-        { 
-            _locker.ExitReadLock();
-        }
-        return returnComments;
+        //List<string> returnComments;
+        //_locker.EnterReadLock();
+        //try
+        //{
+        //    _locker.EnterReadLock();
+        //    returnComments = comments
+        //    .Select(x => x.Comment)
+        //    .ToList();
+        //}
+        //finally
+        //{
+        //    _locker.ExitReadLock();
+        //}
+        //return returnComments;
     }
 
 }
