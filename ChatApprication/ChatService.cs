@@ -13,7 +13,7 @@ public record CommentClient
 
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
-    private static ReaderWriterLockSlim _locker = new ReaderWriterLockSlim();
+    private static Object _Locker = new Object();
     static List<CommentClient> comments = new();
 
 
@@ -23,65 +23,29 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
         var id = context.GetHashCode();
 
-        //await context.ForEachAsync(x =>
-        //    {
-        //        var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
-        //        comments.Add(idAndCommnet);
-        //    });
-
         await context.ForEachAsync(x =>
         {
             var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
-            _locker.EnterWriteLock();
-            try
+            lock(_Locker)
             {
                 comments.Add(idAndCommnet);
             }
-            finally
-            {
-                _locker.ExitWriteLock();
-            }
+    
         });
 
-        try 
-        { 
             return context.Result(false);
-        }
-        finally
-        {
-            _locker.Dispose();
-        }
     }
 
 
 
     public async UnaryResult<List<string>> GetArchiveAsync()
     {
-        _locker.EnterReadLock();
-        try 
+        lock(_Locker)
         {
             return comments
             .Select(x => x.Comment)
             .ToList();
         }
-        finally
-        { 
-            _locker.ExitReadLock();
-        }
-        //List<string> returnComments;
-        //_locker.EnterReadLock();
-        //try
-        //{
-        //    _locker.EnterReadLock();
-        //    returnComments = comments
-        //    .Select(x => x.Comment)
-        //    .ToList();
-        //}
-        //finally
-        //{
-        //    _locker.ExitReadLock();
-        //}
-        //return returnComments;
     }
 
 }
