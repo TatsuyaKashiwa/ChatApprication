@@ -27,6 +27,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// </remarks>
     private static int _id = 0;
 
+    // TODO 通常のObjectへ変更
     /// <summary>
     /// lockのためのObject
     /// </summary>
@@ -61,6 +62,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         //context取得からForEachAsyncの上までの領域は最初にSaveCommentAsyncがクライアントから呼ばれたときに一度だけ呼ばれる
         var context = this.GetClientStreamingContext<string, bool>();
 
+        // TODO UIDやOIDを用いたものへ変更
         //この領域で_idをローカル変数に取り込むことでアクセスしたクライアントのClientStream通信のidを取得する
         //取得後にインクリメントすることで各クライアントで固有の値とする
         var id = _id;

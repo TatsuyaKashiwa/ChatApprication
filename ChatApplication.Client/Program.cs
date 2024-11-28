@@ -21,10 +21,14 @@ internal class Program
         //サーバからClientStreamからのresponseが返ってくるとfalseになりループが終了する
         var canContinue = true;
 
+        Console.WriteLine("""
+                              コメントを入力してください。
+                              archive : 履歴を表示させたい場合
+                              finish  : 終了したい場合
+                              """);
+
         while (canContinue)
         {
-            Console.WriteLine("コメントを入力してください。\n履歴を表示させたい場合はarchiveを\n終了したい場合はfinishを入力してください");
-
             //コメントと履歴表示・終了指示を標準入力から受ける
             var description = Console.ReadLine();
 
