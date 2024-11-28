@@ -1,7 +1,6 @@
 ﻿using ChatApplication.ServiceDefinition;
 using Grpc.Net.Client;
 using MagicOnion.Client;
-using System.Xml.Linq;
 
 namespace ChatApplication.Client;
 
@@ -23,12 +22,12 @@ internal class Program
             if (description.Equals("archive"))
             {
                 var comments = await client.GetArchiveAsync();
-                foreach (var comment in comments) 
+                foreach (var comment in comments)
                 {
                     Console.WriteLine(comment);
                 }
             }
-            else if (description.Equals("finish")) 
+            else if (description.Equals("finish"))
             {
                 await streaming.RequestStream.CompleteAsync();
                 canContinue = await streaming.ResponseAsync;
