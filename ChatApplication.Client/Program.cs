@@ -11,7 +11,9 @@ internal class Program
         var channel = GrpcChannel.ForAddress("https://localhost:7101");
         
         var client = MagicOnionClient.Create<IChatService>(channel);
+        
         var streaming = await client.SaveCommentAsync();
+        
 
         var canContinue = true;
 

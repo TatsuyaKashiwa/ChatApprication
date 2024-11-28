@@ -14,29 +14,30 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 {
     private static int _id = 0;
 
-    private static Lazy<Object> _Locker = new();
-
     /// <summary>
-    /// aaaa
+    /// クライアントから投稿されたコメントを保存するList
     /// </summary>
-    private static List<CommentClient> _comments = new();
+    /// <remarks>
+    /// すべてのクライアントからのコメントを保存するためstaticなフィールドとした
+    /// </remarks>
+    private static Lazy<List<CommentClient>> _comments = new Lazy<List<CommentClient>>(() => new List<CommentClient>(),LazyThreadSafetyMode.ExecutionAndPublication);
 
     public async Task<ClientStreamingResult<string, bool>> SaveCommentAsync()
     {
-        //stream確立時に
+        //context取得からForEachAsyncの上までの領域は最初にSaveCommentAsyncがクライアントから呼ばれたときに一度だけ呼ばれる
         var context = this.GetClientStreamingContext<string, bool>();
 
+        //この領域で_idをローカル変数に取り込むことでClientStream通信に固有のidを取得することができる
         var id = _id;
         _id++;
 
-        //コメント追加時はラムダ式の式部分のみが実行される
+        //コメント追加時に(はラムダ式の式部分のみが)実行される
+        //xにはクライアントからの投稿の文字列が入る
+        //staticなListへアクセスする際にはlockで排他制御を行う
         await context.ForEachAsync(x =>
         {
             var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
-            lock (_Locker.Value)
-            {
-                _comments.Add(idAndCommnet);
-            }
+                _comments.Value.Add(idAndCommnet);
 
         });
 
@@ -49,12 +50,9 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     public async UnaryResult<List<string>> GetArchiveAsync()
     {
-        lock (_Locker.Value)
-        {
-            return _comments
+            return _comments.Value
             .Select(x => x.Comment)
             .ToList();
-        }
     }
 
 }
