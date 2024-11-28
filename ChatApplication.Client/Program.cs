@@ -48,9 +48,7 @@ internal class Program
             //それ以外はコメントとしてサーバで保管
             else
             {
-                await streaming
-                    .RequestStream
-                    .WriteAsync(description);
+                await streaming.RequestStream.WriteAsync(description);
             }
         }
     }
