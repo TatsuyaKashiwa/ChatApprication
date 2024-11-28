@@ -25,7 +25,7 @@ internal class Program
                               コメントを入力してください。
                               archive : 履歴を表示させたい場合
                               finish  : 終了したい場合
-                              """);
+                          """);
 
         while (canContinue)
         {

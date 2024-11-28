@@ -3,6 +3,9 @@
 namespace ChatApplication.ServiceDefinition;
 public interface IChatService : IService<IChatService>
 {
+    //GUIDを設定
+    public UnaryResult<bool> SetYourGuid();
+
     //ClientStreamingならびにコメント保管
     public Task<ClientStreamingResult<string, bool>> SaveCommentAsync();
 
