@@ -74,7 +74,8 @@ public class ChatService : ServiceBase<IChatService>, IChatService
             var idAndCommnet = new CommentClient() { ClientId = id, Comment = $"{id}さん ; {x}" };
             lock (this._Locker.Value)
             {
-                _comments.Add(idAndCommnet);
+                _comments
+                .Add(idAndCommnet);
             }
         });
 
