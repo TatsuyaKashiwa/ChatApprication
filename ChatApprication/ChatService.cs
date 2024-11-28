@@ -34,7 +34,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// lock用Objectのインスタンスはlockが必要になったときに用いられるため
     /// Lazy Objectとした。
     /// </remarks>
-    private Lazy<Object> _Locker = new Lazy<Object>(() =>new Object());
+    private Lazy<Object> _Locker = new(() => new Object());
 
     /// <summary>
     /// クライアントから投稿されたコメントを保存するList
@@ -42,7 +42,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// <remarks>
     /// すべてのクライアントからのコメントを保存するためstaticなフィールドとした
     /// </remarks>
-    private static List<CommentClient> _comments = new List<CommentClient>();
+    private static List<CommentClient> _comments = new();
 
     /// <summary>
     /// ClientStream通信を行うクラス
@@ -72,9 +72,9 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         await context.ForEachAsync(x =>
         {
             var idAndCommnet = new CommentClient() { ClientId = id, Comment = $"{id}さん ; {x}" };
-            lock (_Locker.Value)
+            lock (this._Locker.Value)
             {
-            _comments.Add(idAndCommnet);
+                _comments.Add(idAndCommnet);
             }
         });
 
@@ -94,7 +94,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     ///</remarks>
     public async UnaryResult<List<string>> GetArchiveAsync()
     {
-        lock (_Locker.Value)
+        lock (this._Locker.Value)
         {
             return _comments
             .Select(x => x.Comment)

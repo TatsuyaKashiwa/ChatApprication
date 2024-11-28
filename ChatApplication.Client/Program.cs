@@ -10,13 +10,13 @@ internal class Program
     {
         //チャネル作成
         var channel = GrpcChannel.ForAddress("https://localhost:7101");
-        
+
         //クライアントインスタンス作成
         var client = MagicOnionClient.Create<IChatService>(channel);
-        
+
         //ストリーム(ClientStreamingResult)作成
         var streaming = await client.SaveCommentAsync();
-        
+
         //ループの継続を制御する変数
         //サーバからClientStreamからのresponseが返ってくるとfalseになりループが終了する
         var canContinue = true;
@@ -24,10 +24,10 @@ internal class Program
         while (canContinue)
         {
             Console.WriteLine("コメントを入力してください。\n履歴を表示させたい場合はarchiveを\n終了したい場合はfinishを入力してください");
-            
+
             //コメントと履歴表示・終了指示を標準入力から受ける
             var description = Console.ReadLine();
-            
+
             //"archive"が入力されると履歴表示
             if (description.Equals("archive"))
             {
