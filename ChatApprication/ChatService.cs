@@ -14,13 +14,17 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 {
     private static int _id = 0;
 
+    private Lazy<Object> _Locker = new Lazy<Object>(() =>new Object());
+
     /// <summary>
     /// クライアントから投稿されたコメントを保存するList
     /// </summary>
     /// <remarks>
     /// すべてのクライアントからのコメントを保存するためstaticなフィールドとした
+    /// 
+    /// 初期化は一回のみとしたいため,LazyThreadSafetyModeをExecutionAndPublicationとした
     /// </remarks>
-    private static Lazy<List<CommentClient>> _comments = new Lazy<List<CommentClient>>(() => new List<CommentClient>(),LazyThreadSafetyMode.ExecutionAndPublication);
+    private static List<CommentClient> _comments = new List<CommentClient>();
 
     public async Task<ClientStreamingResult<string, bool>> SaveCommentAsync()
     {
@@ -37,8 +41,10 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         await context.ForEachAsync(x =>
         {
             var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
-                _comments.Value.Add(idAndCommnet);
-
+            lock (_Locker.Value)
+            {
+            _comments.Add(idAndCommnet);
+            }
         });
 
         //クライアントからResponseAsyncが呼ばれたとき(finishが入力されたとき)実行
@@ -50,9 +56,12 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     public async UnaryResult<List<string>> GetArchiveAsync()
     {
-            return _comments.Value
+        lock (_Locker.Value)
+        {
+            return _comments
             .Select(x => x.Comment)
             .ToList();
+        }
     }
 
 }
