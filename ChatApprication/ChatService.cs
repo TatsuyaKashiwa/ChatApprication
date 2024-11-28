@@ -18,11 +18,6 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     private static Lazy<Object> _Locker = new Lazy<Object>();
     
     private static List<CommentClient> _comments = new();
-
-    public async UnaryResult<int> GetId() 
-    {
-        return _id++;
-    }
     
     public async Task<ClientStreamingResult<string, bool>> SaveCommentAsync()
     {
