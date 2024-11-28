@@ -13,10 +13,17 @@ public record CommentClient
 
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
+    private static int _id = 0;
+
     private static Lazy<Object> _Locker = new Lazy<Object>();
-    private static List<CommentClient> comments = new();
+    
+    private static List<CommentClient> _comments = new();
 
-
+    public async UnaryResult<int> GetId() 
+    {
+        return _id++;
+    }
+    
     public async Task<ClientStreamingResult<string, bool>> SaveCommentAsync()
     {
         var context = this.GetClientStreamingContext<string, bool>();
@@ -28,7 +35,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
             var idAndCommnet = new CommentClient() { SessionID = id, Comment = $"{id}さん ; {x}" };
             lock(_Locker.Value)
             {
-                comments.Add(idAndCommnet);
+                _comments.Add(idAndCommnet);
             }
     
         });
@@ -42,7 +49,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     {
         lock(_Locker.Value)
         {
-            return comments
+            return _comments
             .Select(x => x.Comment)
             .ToList();
         }
