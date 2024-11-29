@@ -4,7 +4,7 @@ namespace ChatApplication.ServiceDefinition;
 public interface IChatService : IService<IChatService>
 {
     //GUIDを発行
-    public UnaryResult<bool> GetMyGuid();
+    public UnaryResult<string> GetMyGuid();
 
     //クライアント情報を設定
     public UnaryResult<bool> RegisterClientData(string handlename);

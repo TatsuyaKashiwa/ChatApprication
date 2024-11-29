@@ -16,6 +16,9 @@ internal class Program
         //クライアントインスタンス作成
         var client = MagicOnionClient.Create<IChatService>(channel);
 
+        //GUID取得
+        var guid = client.GetMyGuid();
+
         //GUID設定
         var IsNameExists = true;
         while (IsNameExists) 

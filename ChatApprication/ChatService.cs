@@ -32,7 +32,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// ユーザID
     /// </summary>
     /// <remarks>
-    /// 
+    /// Client(or Duplex)Streamの仕様により引数を渡せないためstaticな変数として保持
     /// </remarks>
     private static string _id = "";
 
@@ -54,6 +54,8 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// すべてのクライアントからのコメントを保存するためstaticなフィールドとした
     /// </remarks>
     private static List<CommentClient> _comments = new();
+
+    public async UnaryResult<string> GetMyGuid() => Guid.NewGuid().ToString();
 
     public async UnaryResult<bool> RegisterClientData(string handlename) 
     {
