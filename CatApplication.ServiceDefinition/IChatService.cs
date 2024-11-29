@@ -7,7 +7,7 @@ public interface IChatService : IService<IChatService>
     public UnaryResult<string> GetMyGuid();
 
     //クライアント情報を設定
-    public UnaryResult<bool> RegisterClientData(string handlename);
+    public UnaryResult<bool> RegisterClientData(string handlename, string guid);
 
     //ClientStreamingならびにコメント保管
     public Task<ClientStreamingResult<string, bool>> SaveCommentAsync();
