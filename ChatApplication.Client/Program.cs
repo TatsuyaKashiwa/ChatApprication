@@ -31,23 +31,26 @@ internal class Program
         //ストリーム(ClientStreamingResult)作成
         var streaming = await client.SaveCommentAsync();
 
+        Console.WriteLine("""
+                              コメントを入力してください。
+                              -a | --archive : 履歴を表示させたい場合
+                              -f | --finish  : 終了したい場合
+                              -h | --help    : helpを表示 
+                          """);
+
         //ループの継続を制御する変数
         //サーバからClientStreamからのresponseが返ってくるとfalseになりループが終了する
         var canContinue = true;
-
-        Console.WriteLine("""
-                              コメントを入力してください。
-                              archive : 履歴を表示させたい場合
-                              finish  : 終了したい場合
-                          """);
 
         while (canContinue)
         {
             //コメントと履歴表示・終了指示を標準入力から受ける
             var description = Console.ReadLine();
 
+            var direction = EntryDistinguisher.DistinguishEntry(description);
+
             //"archive"が入力されると履歴表示
-            if (description.Equals("archive"))
+            if (direction.Equals("ARCHIVE"))
             {
                 var comments = await client.GetArchiveAsync();
                 foreach (var comment in comments)
@@ -57,11 +60,19 @@ internal class Program
             }
             //"finish"が入力されると終了処理
             //サーバのForEachAsyncを止めて、返り値(false)をcanContinueに受け取りTCPコネクションを切断
-            else if (description.Equals("finish"))
+            else if (direction.Equals("FINISH"))
             {
                 await streaming.RequestStream.CompleteAsync();
                 canContinue = await streaming.ResponseAsync;
                 Console.WriteLine("終了しました");
+            }
+            else if (direction.Equals("HELP")) 
+            {
+                Console.WriteLine("""
+                                    -a | --archive : 履歴を表示させたい場合
+                                    -f | --finish  : 終了したい場合
+                                    -h | --help    : helpを表示 
+                                  """);
             }
             //それ以外はコメントとしてサーバで保管
             else
