@@ -17,7 +17,7 @@ internal class Program
         var client = MagicOnionClient.Create<IChatService>(channel);
 
         //GUID取得
-        var guid = client.GetMyGuid();
+        var guid = await client.GetMyGuid();
 
         //GUID設定
         var IsNameExists = true;
@@ -25,7 +25,7 @@ internal class Program
         {
             Console.WriteLine("ハンドルネームを入力してください");
             var handlename = Console.ReadLine();
-            IsNameExists = await client.RegisterClientData(handlename);
+            IsNameExists = await client.RegisterClientData(handlename, guid);
         }
 
         //ストリーム(ClientStreamingResult)作成
