@@ -4,6 +4,9 @@ using MagicOnion.Server;
 
 namespace ChatApprication.Service;
 
+/// <summary>
+/// クライアント名とGUIDを紐づけるrecord型
+/// </summary>
 public record ClientId
 {
     public required string ClientName { get; init; }
@@ -11,10 +14,10 @@ public record ClientId
 }
 
 /// <summary>
-/// idとコメントを紐づけるrecord型
+/// 名前とコメントを紐づけるrecord型
 /// </summary>
 /// <remarks>
-/// ClientName : クライアントID
+/// ClientName : クライアント名
 /// Comment ： 投稿コメント
 /// </remarks>
 public record CommentClient
@@ -29,17 +32,16 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// ユーザID
     /// </summary>
     /// <remarks>
-    /// ClientStreamの接続ごとに各クライアントでローカル変数として保持する
+    /// 
     /// </remarks>
-    private static int _id = 0;
+    private static string _id = "";
 
     // TODO 通常のObjectへ変更
     /// <summary>
     /// lockのためのObject
     /// </summary>
     /// <remarks>
-    /// lock用Objectのインスタンスはlockが必要になったときに用いられるため
-    /// Lazy Objectとした。
+    /// lock用ObjectのインスタンスとしてObject型の変数を用意
     /// </remarks>
     private Object _Locker = new();
 
@@ -53,7 +55,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// </remarks>
     private static List<CommentClient> _comments = new();
 
-    public async UnaryResult<bool> SetYourGuid(string handlename) 
+    public async UnaryResult<bool> RegisterClientData(string handlename) 
     {
         var query = _clientDataSet
             .Select(x => x.ClientName)
@@ -66,8 +68,12 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         else 
         {
             string guid = Guid.NewGuid().ToString();
-            var clientData = new ClientId { ClientName = handlename, ClientGuid = guid };
-            _clientDataSet.Add(clientData);
+            lock (this._Locker)
+            {
+                _id = guid;
+                var clientData = new ClientId { ClientName = handlename, ClientGuid = guid };
+                _clientDataSet.Add(clientData);
+            }
             return false; 
         }
     }
@@ -90,17 +96,19 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         var context = this.GetClientStreamingContext<string, bool>();
 
         // TODO UIDやOIDを用いたものへ変更
-        //この領域で_idをローカル変数に取り込むことでアクセスしたクライアントのClientStream通信のidを取得する
-        //取得後にインクリメントすることで各クライアントで固有の値とする
-        var id = _id.ToString();
-        
+        //CHANGED GUIDによるものへ変更
+        //var id = _id.ToString();
+        var name = _clientDataSet
+            .Where(x => x.ClientGuid == _id)
+            .Select(x => x.ClientName)
+            .Single();
 
         //コメント追加時に(はラムダ式の式部分のみが)実行される
         //xにはクライアントからの投稿の文字列が入る
         //staticなListへアクセスする際にはlockで排他制御を行う
         await context.ForEachAsync(x =>
         {
-            var idAndCommnet = new CommentClient() { ClientName = id, Comment = $"{id}さん ; {x}" };
+            var idAndCommnet = new CommentClient() { ClientName = name, Comment = $"{name}さん ; {x}" };
             lock (this._Locker)
             {
                 _comments

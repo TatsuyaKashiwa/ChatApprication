@@ -22,7 +22,7 @@ internal class Program
         {
             Console.WriteLine("ハンドルネームを入力してください");
             var handlename = Console.ReadLine();
-            IsNameExists = await client.SetYourGuid(handlename);
+            IsNameExists = await client.RegisterClientData(handlename);
         }
 
         //ストリーム(ClientStreamingResult)作成
