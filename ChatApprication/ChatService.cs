@@ -57,7 +57,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     public async UnaryResult<string> GetMyGuid() => Guid.NewGuid().ToString();
 
-    public async UnaryResult<bool> RegisterClientData(string handlename) 
+    public async UnaryResult<bool> RegisterClientData(string handlename, string guid) 
     {
         var query = _clientDataSet
             .Select(x => x.ClientName)
@@ -69,7 +69,6 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         }
         else 
         {
-            string guid = Guid.NewGuid().ToString();
             lock (this._Locker)
             {
                 _id = guid;
