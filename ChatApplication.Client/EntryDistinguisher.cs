@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace ChatApplication.Client;
 internal static class EntryDistinguisher
 {
+    // TODO 拡張メソッドに変換すること
     internal static string DistinguishEntry(string comment) 
     {
         if (Regex.IsMatch(comment, "^-a$|^--archive$"))

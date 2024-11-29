@@ -59,6 +59,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     public async UnaryResult<bool> RegisterClientData(string handlename, string guid) 
     {
+        // TODO 適切な名前へ変更
         var query = _clientDataSet
             .Select(x => x.ClientName)
             .Any(x => x.Equals(handlename));
