@@ -4,16 +4,22 @@ using MagicOnion.Server;
 
 namespace ChatApprication.Service;
 
+public record ClientId
+{
+    public required string ClientName { get; init; }
+    public required string ClientGuid { get; init; }
+}
+
 /// <summary>
 /// idとコメントを紐づけるrecord型
 /// </summary>
 /// <remarks>
-/// ClientId : クライアントID
+/// ClientName : クライアントID
 /// Comment ： 投稿コメント
 /// </remarks>
 public record CommentClient
 {
-    public required int ClientId { get; init; }
+    public required string ClientName { get; init; }
     public required string Comment { get; init; }
 }
 
@@ -37,6 +43,8 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// </remarks>
     private Object _Locker = new();
 
+    private static List<ClientId> _clientDataSet = new();
+
     /// <summary>
     /// クライアントから投稿されたコメントを保存するList
     /// </summary>
@@ -44,6 +52,25 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// すべてのクライアントからのコメントを保存するためstaticなフィールドとした
     /// </remarks>
     private static List<CommentClient> _comments = new();
+
+    public async UnaryResult<bool> SetYourGuid(string handlename) 
+    {
+        var query = _clientDataSet
+            .Select(x => x.ClientName)
+            .Any(x => x.Equals(handlename));
+
+        if (query)
+        {
+            return true;
+        }
+        else 
+        {
+            string guid = Guid.NewGuid().ToString();
+            var clientData = new ClientId { ClientName = handlename, ClientGuid = guid };
+            _clientDataSet.Add(clientData);
+            return false; 
+        }
+    }
 
     /// <summary>
     /// ClientStream通信を行うクラス
@@ -65,15 +92,15 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         // TODO UIDやOIDを用いたものへ変更
         //この領域で_idをローカル変数に取り込むことでアクセスしたクライアントのClientStream通信のidを取得する
         //取得後にインクリメントすることで各クライアントで固有の値とする
-        var id = _id;
-        _id++;
+        var id = _id.ToString();
+        
 
         //コメント追加時に(はラムダ式の式部分のみが)実行される
         //xにはクライアントからの投稿の文字列が入る
         //staticなListへアクセスする際にはlockで排他制御を行う
         await context.ForEachAsync(x =>
         {
-            var idAndCommnet = new CommentClient() { ClientId = id, Comment = $"{id}さん ; {x}" };
+            var idAndCommnet = new CommentClient() { ClientName = id, Comment = $"{id}さん ; {x}" };
             lock (this._Locker)
             {
                 _comments
