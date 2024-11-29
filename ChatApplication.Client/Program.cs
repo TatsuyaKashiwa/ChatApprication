@@ -14,6 +14,8 @@ internal class Program
         //クライアントインスタンス作成
         var client = MagicOnionClient.Create<IChatService>(channel);
 
+        //GUID設定
+
         //ストリーム(ClientStreamingResult)作成
         var streaming = await client.SaveCommentAsync();
 
