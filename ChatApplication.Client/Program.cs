@@ -2,6 +2,7 @@
 using Grpc.Net.Client;
 using MagicOnion;
 using MagicOnion.Client;
+using System.Xml.Linq;
 
 namespace ChatApplication.Client;
 
@@ -16,7 +17,13 @@ internal class Program
         var client = MagicOnionClient.Create<IChatService>(channel);
 
         //GUID設定
-        
+        var IsNameExists = true;
+        while (IsNameExists) 
+        {
+            Console.WriteLine("ハンドルネームを入力してください");
+            var handlename = Console.ReadLine();
+            IsNameExists = await client.SetYourGuid(handlename);
+        }
 
         //ストリーム(ClientStreamingResult)作成
         var streaming = await client.SaveCommentAsync();
