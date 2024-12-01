@@ -8,6 +8,16 @@ namespace ChatApplication.Client;
 
 internal class Program
 {
+
+    enum Directions 
+    {
+        Archive,
+        Finish,
+        Help,
+        Comment
+    };
+
+
     internal static async Task Main(string[] args)
     {
         //チャネル作成
