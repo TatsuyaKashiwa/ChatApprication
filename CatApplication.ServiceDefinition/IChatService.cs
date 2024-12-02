@@ -1,8 +1,17 @@
 ﻿using MagicOnion;
 
 namespace ChatApplication.ServiceDefinition;
-public interface IChatService : IService<IChatService>
+
+public struct CommentInfomation 
 {
+    public string Name { get; set; }
+    public string Guid { get; set; }
+    public string Comment { get; set; 
+}
+
+    public interface IChatService : IService<IChatService>
+    {
+     public CommentInfomation commentInfomation { get; set; }
     //GUIDを発行
     public UnaryResult<string> GetMyGuid();
 
