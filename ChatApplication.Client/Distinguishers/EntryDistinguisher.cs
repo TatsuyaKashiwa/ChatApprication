@@ -6,11 +6,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace ChatApplication.Client;
+namespace ChatApplication.Client.Distinguishers;
 public static class EntryDistinguisher
 {
     // TODO 拡張メソッドに変換すること
-    public static string DistinguishEntry(string comment) 
+    public static string DistinguishEntry(this string comment)
     {
         if (Regex.IsMatch(comment, "^-a$|^--archive$"))
         {
@@ -20,7 +20,7 @@ public static class EntryDistinguisher
         {
             return "FINISH";
         }
-        else if (Regex.IsMatch(comment, "^-h$|^--help$")) 
+        else if (Regex.IsMatch(comment, "^-h$|^--help$"))
         {
             return "HELP";
         }

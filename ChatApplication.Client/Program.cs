@@ -1,4 +1,5 @@
-﻿using ChatApplication.ServiceDefinition;
+﻿using ChatApplication.Client.Distinguishers;
+using ChatApplication.ServiceDefinition;
 using Grpc.Net.Client;
 using MagicOnion;
 using MagicOnion.Client;
@@ -6,18 +7,17 @@ using System.Xml.Linq;
 
 namespace ChatApplication.Client;
 
+public enum Directions
+{
+    Archive,
+    Finish,
+    Help,
+    Comment
+};
+
+
 internal class Program
 {
-
-    enum Directions 
-    {
-        Archive,
-        Finish,
-        Help,
-        Comment
-    };
-
-
     internal static async Task Main(string[] args)
     {
         //チャネル作成
@@ -57,7 +57,7 @@ internal class Program
             //コメントと履歴表示・終了指示を標準入力から受ける
             var description = Console.ReadLine();
 
-            var direction = EntryDistinguisher.DistinguishEntry(description);
+            var direction = description.DistinguishEntry();
 
             //"archive"が入力されると履歴表示
             if (direction.Equals("ARCHIVE"))
