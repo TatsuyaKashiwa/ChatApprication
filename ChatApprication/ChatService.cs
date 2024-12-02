@@ -132,11 +132,12 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         await context.ForEachAsync(x =>
         {
             // TODO: typo
-            var idAndCommnet = new CommentClient() { PostedClientName = name, Comment = $"{name}さん ; {x}" };
+            //CHECKED: 修正しました
+            var idAndComment = new CommentClient() { PostedClientName = name, Comment = $"{name}さん ; {x}" };
 
             lock (this._Locker)
             {
-                _comments.Add(idAndCommnet);
+                _comments.Add(idAndComment);
             }
         });
 

@@ -1,4 +1,5 @@
 ﻿using ChatApplication.Client.Distinguishers;
+using ChatApplication.Client.CommandProseccing;
 using ChatApplication.ServiceDefinition;
 using Grpc.Net.Client;
 using MagicOnion.Client;
@@ -81,37 +82,26 @@ public class Program
 
             // TODO: 下記の処理の分岐を Swhich 式での記述を検討してみて
             //       それぞれの処理をメソッドとして切り出すと可読性が向上します。
-            //"-a or --archive"が入力されると履歴表示
-            if (direction is Direction.Archive)
+            //CHECKED: switch式は返却値が必須とのことでしたのでswitch文で実装しました。
+            switch (direction) 
             {
-                var comments = await client.GetArchiveAsync();
-                foreach (var comment in comments)
-                {
-                    Console.WriteLine(comment);
-                }
-            }
-            //"-f or --finish"が入力されると終了処理
-            //サーバのForEachAsyncを止めて、返り値(false)をcanContinueに受け取りTCPコネクションを切断
-            else if (direction is Direction.Finish)
-            {
-                await streaming.RequestStream.CompleteAsync();
-                canContinue = await streaming.ResponseAsync;
-                Console.WriteLine("終了しました");
-            }
-            //-h or --helpが入力されるとヘルプを表示
-            else if (direction is Direction.Help)
-            {
-                Console.WriteLine("""
-                                    -a | --archive : 履歴を表示させたい場合
-                                    -f | --finish  : 終了したい場合
-                                    -h | --help    : helpを表示 
-                                  """);
-            }
-            //それ以外はコメントとしてサーバで保管
-            else
-            {
+                //"-a or --archive"が入力されると履歴表示
+                case Direction.Archive: 
+                    client.ShowArchiveAsync();
+                    break;
+                //"-f or --finish"が入力されると終了処理
+                //サーバのForEachAsyncを止めて、返り値(false)をcanContinueに受け取りTCPコネクションを切断
+                case Direction.Finish:
+                    canContinue = await streaming.FinishClientStreamAsync();
+                    break;
+                //-h or --helpが入力されるとヘルプを表示
+                case Direction.Help:
+                    CommandProcesser.ShowHelp();
+                    break;
                 // TODO: カスタム構造体を使用することで、コメントとハンドルネームを一緒に保持することができると思います。
-                await streaming.RequestStream.WriteAsync(description);
+                default:
+                    await streaming.RequestStream.WriteAsync(description);
+                    break;
             }
         }
     }
