@@ -41,16 +41,18 @@ public class Program
 
         //GUID設定
         // TODO: 命名規則に従って変数名を変更する
-        var IsNameExists = true;
-        while (IsNameExists)
+        // CHECKED: キャメルケースへ変更を行った
+        var isNameExists = true;
+        while (isNameExists)
         {
             Console.WriteLine("ハンドルネームを入力してください");
 
             // TODO: 命名規則に従って変数名を変更する
-            var handlename = Console.ReadLine();
+            //CHECKED: キャメルケースへ変更を行った
+            var handleName = Console.ReadLine();
 
             // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
-            IsNameExists = await client.RegisterClientData(handlename, guid);
+            isNameExists = await client.RegisterClientData(handleName, guid);
         }
 
         //ストリーム(ClientStreamingResult)作成
