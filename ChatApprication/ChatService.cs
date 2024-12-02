@@ -92,6 +92,9 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         {
             lock (this._Locker)
             {
+                // TODO: 重複に対応する仕組みを検討すること、dictionary で管理するなど
+                // TODO: _guid が引数で渡せないとあるが、カスタム構造体か文字列の前置詞として追記を試してみては？
+                //       引数を string にしていることが要因なのでは？
                 _guid = guid;
                 var clientData = new ClientData { ClientName = handlename, ClientGuid = _guid };
                 _clientDataSet.Add(clientData);
@@ -128,6 +131,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         //staticなListへアクセスする際にはlockで排他制御を行う
         await context.ForEachAsync(x =>
         {
+            // TODO: typo
             var idAndCommnet = new CommentClient() { PostedClientName = name, Comment = $"{name}さん ; {x}" };
 
             lock (this._Locker)

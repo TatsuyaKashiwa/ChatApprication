@@ -26,22 +26,30 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        // TODO: json ファイルから設定を読み込むように変更する
         //チャネル作成
         var channel = GrpcChannel.ForAddress("https://localhost:7101");
 
         //クライアントインスタンス作成
         var client = MagicOnionClient.Create<IChatService>(channel);
 
+        // TODO: guid はあくまでサービスが各クライアントを識別するためのモノで
+        //       ログイン等の返り値として付与したほうが良いのでは？
+        //       生成はサービスであるメリットがない
         //GUID取得
         var guid = await client.GetMyGuid();
 
         //GUID設定
+        // TODO: 命名規則に従って変数名を変更する
         var IsNameExists = true;
         while (IsNameExists)
         {
             Console.WriteLine("ハンドルネームを入力してください");
+
+            // TODO: 命名規則に従って変数名を変更する
             var handlename = Console.ReadLine();
 
+            // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
             IsNameExists = await client.RegisterClientData(handlename, guid);
         }
 
@@ -69,6 +77,8 @@ public class Program
             //入力に対する指示を受ける
             var direction = description.DistinguishEntry();
 
+            // TODO: 下記の処理の分岐を Swhich 式での記述を検討してみて
+            //       それぞれの処理をメソッドとして切り出すと可読性が向上します。
             //"-a or --archive"が入力されると履歴表示
             if (direction is Direction.Archive)
             {
@@ -98,8 +108,10 @@ public class Program
             //それ以外はコメントとしてサーバで保管
             else
             {
+                // TODO: カスタム構造体を使用することで、コメントとハンドルネームを一緒に保持することができると思います。
                 await streaming.RequestStream.WriteAsync(description);
             }
         }
     }
 }
+
