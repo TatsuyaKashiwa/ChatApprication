@@ -60,7 +60,7 @@ internal class Program
             var direction = description.DistinguishEntry();
 
             //"archive"が入力されると履歴表示
-            if (direction.Equals("ARCHIVE"))
+            if (direction is Directions.Archive)
             {
                 var comments = await client.GetArchiveAsync();
                 foreach (var comment in comments)
@@ -70,13 +70,13 @@ internal class Program
             }
             //"finish"が入力されると終了処理
             //サーバのForEachAsyncを止めて、返り値(false)をcanContinueに受け取りTCPコネクションを切断
-            else if (direction.Equals("FINISH"))
+            else if (direction is Directions.Finish)
             {
                 await streaming.RequestStream.CompleteAsync();
                 canContinue = await streaming.ResponseAsync;
                 Console.WriteLine("終了しました");
             }
-            else if (direction.Equals("HELP")) 
+            else if (direction is Directions.Help) 
             {
                 Console.WriteLine("""
                                     -a | --archive : 履歴を表示させたい場合
