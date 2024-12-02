@@ -1,33 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
+﻿using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ChatApplication.Client.Distinguishers;
 public static class EntryDistinguisher
 {
-    // TODO 拡張メソッドに変換すること
-    public static Directions DistinguishEntry(this string comment)
+    //クライアントにて処理に対応する列挙値を返却する
+    public static Direction DistinguishEntry(this string comment)
     {
-        var selection = Directions.Archive;
         if (Regex.IsMatch(comment, "^-a$|^--archive$"))
         {
-            return Directions.Archive;
+            return Direction.Archive;
         }
         else if (Regex.IsMatch(comment, "^-f$|^--finish$"))
         {
-            return Directions.Finish;
+            return Direction.Finish;
         }
         else if (Regex.IsMatch(comment, "^-h$|^--help$"))
         {
-            return Directions.Help;
+            return Direction.Help;
         }
-        else
+        else 
         {
-            return Directions.Comment;
+            return Direction.Comment;
         }
     }
 }

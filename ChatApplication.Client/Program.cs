@@ -1,9 +1,7 @@
 ﻿using ChatApplication.Client.Distinguishers;
 using ChatApplication.ServiceDefinition;
 using Grpc.Net.Client;
-using MagicOnion;
 using MagicOnion.Client;
-using System.Xml.Linq;
 
 namespace ChatApplication.Client;
 
@@ -15,7 +13,7 @@ namespace ChatApplication.Client;
 /// 使用されるのはクライアント内(サーバへのアクセスは分岐後)のため
 /// クライアント名前空間内で宣言
 /// </remarks>
-public enum Directions
+public enum Direction
 {
     Archive,
     Finish,
@@ -39,10 +37,11 @@ public class Program
 
         //GUID設定
         var IsNameExists = true;
-        while (IsNameExists) 
+        while (IsNameExists)
         {
             Console.WriteLine("ハンドルネームを入力してください");
             var handlename = Console.ReadLine();
+
             IsNameExists = await client.RegisterClientData(handlename, guid);
         }
 
@@ -61,7 +60,7 @@ public class Program
         //サーバからClientStreamからのresponseが返ってくるとfalseになりループが終了する
         var canContinue = true;
 
-       //サーバからfalseが返る(終了コマンドが入力される)まで
+        //サーバからfalseが返る(終了コマンドが入力される)まで
         while (canContinue)
         {
             //コメントならびに入力コマンドを標準入力から受ける
@@ -71,7 +70,7 @@ public class Program
             var direction = description.DistinguishEntry();
 
             //"-a or --archive"が入力されると履歴表示
-            if (direction is Directions.Archive)
+            if (direction is Direction.Archive)
             {
                 var comments = await client.GetArchiveAsync();
                 foreach (var comment in comments)
@@ -81,14 +80,14 @@ public class Program
             }
             //"-f or --finish"が入力されると終了処理
             //サーバのForEachAsyncを止めて、返り値(false)をcanContinueに受け取りTCPコネクションを切断
-            else if (direction is Directions.Finish)
+            else if (direction is Direction.Finish)
             {
                 await streaming.RequestStream.CompleteAsync();
                 canContinue = await streaming.ResponseAsync;
                 Console.WriteLine("終了しました");
             }
             //-h or --helpが入力されるとヘルプを表示
-            else if (direction is Directions.Help) 
+            else if (direction is Direction.Help)
             {
                 Console.WriteLine("""
                                     -a | --archive : 履歴を表示させたい場合
