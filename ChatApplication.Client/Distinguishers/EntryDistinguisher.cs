@@ -10,23 +10,24 @@ namespace ChatApplication.Client.Distinguishers;
 public static class EntryDistinguisher
 {
     // TODO 拡張メソッドに変換すること
-    public static string DistinguishEntry(this string comment)
+    public static Directions DistinguishEntry(this string comment)
     {
+        var selection = Directions.Archive;
         if (Regex.IsMatch(comment, "^-a$|^--archive$"))
         {
-            return "ARCHIVE";
+            return Directions.Archive;
         }
         else if (Regex.IsMatch(comment, "^-f$|^--finish$"))
         {
-            return "FINISH";
+            return Directions.Finish;
         }
         else if (Regex.IsMatch(comment, "^-h$|^--help$"))
         {
-            return "HELP";
+            return Directions.Help;
         }
         else
         {
-            return "COMMENT";
+            return Directions.Comment;
         }
     }
 }
