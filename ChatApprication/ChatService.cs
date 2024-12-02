@@ -5,15 +5,24 @@ using MagicOnion.Server;
 namespace ChatApprication.Service;
 
 /// <summary>
-/// idとコメントを紐づけるrecord型
+/// クライアント名とGUIDを紐づけるrecord型
+/// </summary>
+public record ClientData
+{
+    public required string ClientName { get; init; }
+    public required string ClientGuid { get; init; }
+}
+
+/// <summary>
+/// 名前とコメントを紐づけるrecord型
 /// </summary>
 /// <remarks>
-/// ClientId : クライアントID
+/// PostedClientName : クライアント名
 /// Comment ： 投稿コメント
 /// </remarks>
 public record CommentClient
 {
-    public required int ClientId { get; init; }
+    public required string PostedClientName { get; init; }
     public required string Comment { get; init; }
 }
 
@@ -23,19 +32,20 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// ユーザID
     /// </summary>
     /// <remarks>
-    /// ClientStreamの接続ごとに各クライアントでローカル変数として保持する
+    /// Client(or Duplex)Streamの仕様により引数を渡せないためstaticな変数として保持
     /// </remarks>
-    private static int _id = 0;
+    private static string _guid = "";
 
-    // TODO 通常のObjectへ変更
     /// <summary>
     /// lockのためのObject
     /// </summary>
     /// <remarks>
-    /// lock用Objectのインスタンスはlockが必要になったときに用いられるため
-    /// Lazy Objectとした。
+    /// lock用ObjectのインスタンスとしてObject型の変数を用意
     /// </remarks>
     private Object _Locker = new();
+
+    //クライアント情報を保持するクラス
+    private static List<ClientData> _clientDataSet = [];
 
     /// <summary>
     /// クライアントから投稿されたコメントを保存するList
@@ -43,7 +53,52 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// <remarks>
     /// すべてのクライアントからのコメントを保存するためstaticなフィールドとした
     /// </remarks>
-    private static List<CommentClient> _comments = new();
+    private static List<CommentClient> _comments = [];
+
+    //GUIDを取得してクライアントへ返却
+    public async UnaryResult<string> GetMyGuid()
+    {
+        return Guid.NewGuid().ToString();
+    }
+
+
+    /// <summary>
+    /// クライアント名とGUIDをセットにしたrecord型をListに登録
+    /// </summary>
+    /// <param name="handlename">クライアントから入力されたハンドルネーム</param>
+    /// <param name="guid">クライアントが保持するGUID</param>
+    /// <returns>
+    /// true : クライアントでループを継続
+    /// false : クライアントでループを抜けてClientStream接続へ進む
+    /// </returns>
+    /// <remarks>
+    /// LINQの結果がtrue(すでに登録されている名前)であればtrueを返し、
+    /// falseであれば引数 guid をサーバ側のstaticな_id変数に保持し、
+    /// 引数 handlename とともにrecord型にして
+    /// Listに追加してfalseを返す。
+    /// falseの分岐の処理はstaticな変数へのアクセス・変更となるのでlockを掛けた
+    /// </remarks>
+    public async UnaryResult<bool> RegisterClientData(string handlename, string guid)
+    {
+        var isNameExists = _clientDataSet
+            .Select(x => x.ClientName)
+            .Any(x => x == handlename);
+
+        if (isNameExists)
+        {
+            return true;
+        }
+        else
+        {
+            lock (this._Locker)
+            {
+                _guid = guid;
+                var clientData = new ClientData { ClientName = handlename, ClientGuid = _guid };
+                _clientDataSet.Add(clientData);
+            }
+            return false;
+        }
+    }
 
     /// <summary>
     /// ClientStream通信を行うクラス
@@ -62,22 +117,22 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         //context取得からForEachAsyncの上までの領域は最初にSaveCommentAsyncがクライアントから呼ばれたときに一度だけ呼ばれる
         var context = this.GetClientStreamingContext<string, bool>();
 
-        // TODO UIDやOIDを用いたものへ変更
-        //この領域で_idをローカル変数に取り込むことでアクセスしたクライアントのClientStream通信のidを取得する
-        //取得後にインクリメントすることで各クライアントで固有の値とする
-        var id = _id;
-        _id++;
+        //GUIDに合致するクライアントのハンドルネームを取得する
+        var name = _clientDataSet
+            .Where(x => x.ClientGuid == _guid)
+            .Select(x => x.ClientName)
+            .Single();
 
         //コメント追加時に(はラムダ式の式部分のみが)実行される
         //xにはクライアントからの投稿の文字列が入る
         //staticなListへアクセスする際にはlockで排他制御を行う
         await context.ForEachAsync(x =>
         {
-            var idAndCommnet = new CommentClient() { ClientId = id, Comment = $"{id}さん ; {x}" };
+            var idAndCommnet = new CommentClient() { PostedClientName = name, Comment = $"{name}さん ; {x}" };
+
             lock (this._Locker)
             {
-                _comments
-                .Add(idAndCommnet);
+                _comments.Add(idAndCommnet);
             }
         });
 

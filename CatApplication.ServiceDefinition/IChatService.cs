@@ -3,8 +3,11 @@
 namespace ChatApplication.ServiceDefinition;
 public interface IChatService : IService<IChatService>
 {
-    //GUIDを設定
-    public UnaryResult<bool> SetYourGuid();
+    //GUIDを発行
+    public UnaryResult<string> GetMyGuid();
+
+    //クライアント情報を設定
+    public UnaryResult<bool> RegisterClientData(string handlename, string guid);
 
     //ClientStreamingならびにコメント保管
     public Task<ClientStreamingResult<string, bool>> SaveCommentAsync();
