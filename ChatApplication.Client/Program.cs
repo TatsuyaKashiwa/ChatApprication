@@ -24,9 +24,9 @@ public enum Directions
 };
 
 
-internal class Program
+public class Program
 {
-    internal static async Task Main(string[] args)
+    public static async Task Main(string[] args)
     {
         //チャネル作成
         var channel = GrpcChannel.ForAddress("https://localhost:7101");
