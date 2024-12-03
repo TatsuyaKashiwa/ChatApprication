@@ -104,6 +104,7 @@ public class Program
                     CommandProcesser.ShowHelp();
                     break;
                 // TODO: カスタム構造体を使用することで、コメントとハンドルネームを一緒に保持することができると思います。
+                //CHECKED: カスタム構造体を用いた形式へ変更した。
                 default:
                     var commentInformation = description.SetCommentInformation(handleName, guid);
                     await streaming.RequestStream.WriteAsync(commentInformation);
