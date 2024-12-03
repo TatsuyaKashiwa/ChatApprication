@@ -4,19 +4,6 @@ using MagicOnion.Server;
 
 namespace ChatApprication.Service;
 
-/// <summary>
-/// 名前とコメントを紐づけるrecord型
-/// </summary>
-/// <remarks>
-/// PostedClientName : クライアント名
-/// Comment ： 投稿コメント
-/// </remarks>
-public record CommentInformations
-{
-    public required string PostedClientName { get; init; }
-    public required string Comment { get; init; }
-}
-
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
     /// <summary>
@@ -29,6 +16,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
     //クライアント情報を保持するディクショナリ
     //登録順は問わないのでディクショナリにした
+    //{guid, handleName}
     private static Dictionary<string, string> _clientDataSet = [];
 
     /// <summary>
@@ -40,7 +28,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     private static List<CommentInformation> _comments = [];
 
     //名前(クライアント情報ディクショナリのValue)の重複を確認
-    //重複していればtrue
+    //重複していればtrueを返却
     public async UnaryResult<bool> ExistsName(string handleName)
     {
         return _clientDataSet.ContainsValue(handleName);

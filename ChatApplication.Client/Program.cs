@@ -19,14 +19,12 @@ public enum Direction
     Archive,
     Finish,
     Help,
-    Comment
+    Comment,
 };
 
 
 public class Program
 {
-    public static CommentInformation CommentInfomation { get; set; }
-
     public static async Task Main(string[] args)
     {
         // TODO: json ファイルから設定を読み込むように変更する
