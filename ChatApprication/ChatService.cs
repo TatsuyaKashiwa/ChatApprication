@@ -20,7 +20,7 @@ public record ClientData
 /// PostedClientName : クライアント名
 /// Comment ： 投稿コメント
 /// </remarks>
-public record CommentClient
+public record CommentInformations
 {
     public required string PostedClientName { get; init; }
     public required string Comment { get; init; }
@@ -53,7 +53,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// <remarks>
     /// すべてのクライアントからのコメントを保存するためstaticなフィールドとした
     /// </remarks>
-    private static List<CommentClient> _comments = [];
+    private static List<CommentInformation> _comments = [];
 
     //GUIDを取得してクライアントへ返却
     public async UnaryResult<string> GetMyGuid()
@@ -115,10 +115,10 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// コメントの保存を行う
     /// クライアントから終了の指示が送られると returnが実行されて接続を切断する。
     /// </remarks>
-    public async Task<ClientStreamingResult<string, bool>> SaveCommentAsync()
+    public async Task<ClientStreamingResult<CommentInformation, bool>> SaveCommentAsync()
     {
         //context取得からForEachAsyncの上までの領域は最初にSaveCommentAsyncがクライアントから呼ばれたときに一度だけ呼ばれる
-        var context = this.GetClientStreamingContext<string, bool>();
+        var context = this.GetClientStreamingContext<CommentInformation, bool>();
 
         //GUIDに合致するクライアントのハンドルネームを取得する
         var name = _clientDataSet
@@ -133,11 +133,10 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         {
             // TODO: typo
             //CHECKED: 修正しました
-            var idAndComment = new CommentClient() { PostedClientName = name, Comment = $"{name}さん ; {x}" };
-
+            //var idAndComment = new CommentInformations() { PostedClientName = name, Comment = $"{name}さん ; {x}" };
             lock (this._Locker)
             {
-                _comments.Add(idAndComment);
+                _comments.Add(x);
             }
         });
 

@@ -1,17 +1,23 @@
 ﻿using MagicOnion;
+using MessagePack;
 
 namespace ChatApplication.ServiceDefinition;
 
-public struct CommentInfomation 
-{
-    public string Name { get; set; }
-    public string Guid { get; set; }
-    public string Comment { get; set; 
-}
+    [MessagePackObject]
+    public struct CommentInformation 
+    {
+        [Key(0)]
+        public string Name { get; set; }
+        
+        [Key(1)]
+        public string Guid { get; set; }
+        
+        [Key(2)]
+        public string Comment { get; set; }
+    }
 
     public interface IChatService : IService<IChatService>
     {
-     public CommentInfomation commentInfomation { get; set; }
     //GUIDを発行
     public UnaryResult<string> GetMyGuid();
 
@@ -19,7 +25,7 @@ public struct CommentInfomation
     public UnaryResult<bool> RegisterClientData(string handlename, string guid);
 
     //ClientStreamingならびにコメント保管
-    public Task<ClientStreamingResult<string, bool>> SaveCommentAsync();
+    public Task<ClientStreamingResult<CommentInformation, bool>> SaveCommentAsync();
 
     //コメント履歴表示
     public UnaryResult<List<string>> GetArchiveAsync();

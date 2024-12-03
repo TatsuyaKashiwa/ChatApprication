@@ -3,6 +3,7 @@ using ChatApplication.Client.CommandProseccing;
 using ChatApplication.ServiceDefinition;
 using Grpc.Net.Client;
 using MagicOnion.Client;
+using static ChatApplication.ServiceDefinition.CommentInformation;
 
 namespace ChatApplication.Client;
 
@@ -25,6 +26,8 @@ public enum Direction
 
 public class Program
 {
+    public static CommentInformation CommentInfomation { get; set; }
+
     public static async Task Main(string[] args)
     {
         // TODO: json ファイルから設定を読み込むように変更する
@@ -40,17 +43,18 @@ public class Program
         //GUID取得
         var guid = await client.GetMyGuid();
 
-        //GUID設定
-        // TODO: 命名規則に従って変数名を変更する
-        // CHECKED: キャメルケースへ変更を行った
-        var isNameExists = true;
+    //GUID設定
+    // TODO: 命名規則に従って変数名を変更する
+    // CHECKED: キャメルケースへ変更を行った
+    var isNameExists = true;
+        var handleName ="";
         while (isNameExists)
         {
             Console.WriteLine("ハンドルネームを入力してください");
 
             // TODO: 命名規則に従って変数名を変更する
             //CHECKED: キャメルケースへ変更を行った
-            var handleName = Console.ReadLine();
+            handleName = Console.ReadLine();
 
             // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
             isNameExists = await client.RegisterClientData(handleName, guid);
@@ -100,7 +104,8 @@ public class Program
                     break;
                 // TODO: カスタム構造体を使用することで、コメントとハンドルネームを一緒に保持することができると思います。
                 default:
-                    await streaming.RequestStream.WriteAsync(description);
+                    var commentInformation = description.SetCommentInformation(handleName , guid); ;
+                    await streaming.RequestStream.WriteAsync(commentInformation);
                     break;
             }
         }
