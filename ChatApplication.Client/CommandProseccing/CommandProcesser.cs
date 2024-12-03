@@ -44,12 +44,13 @@ public static class CommandProcesser
         };
     }
 
-    public static async void ShowMyCommentAsync(this IChatService client, string guid)
+    public static async void ShowYourCommentAsync(this IChatService client, string guid)
     {
-        var comments = await client.GetMyCommentAsync(guid);
-        foreach (var mycomment in comments)
+        var comments = await client.GetYourCommentAsync(guid);
+        Console.WriteLine("あなたの入力したコメントを以下に表示します。");
+        foreach (var yourcomment in comments)
         {
-            Console.WriteLine(mycomment);
+            Console.WriteLine(yourcomment);
         }
     }
 }

@@ -31,5 +31,5 @@ namespace ChatApplication.ServiceDefinition;
     public UnaryResult<List<CommentInformation>> GetArchiveAsync();
 
     //自身のコメント履歴取得
-    public UnaryResult<List<string>> GetMyCommentAsync(string guid);
+    public UnaryResult<List<string>> GetYourCommentAsync(string guid);
 }

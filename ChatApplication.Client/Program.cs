@@ -19,7 +19,7 @@ public enum Direction
     Archive,
     Finish,
     Help,
-    MyCommnet,
+    YourCommnet,
     Comment,
 };
 
@@ -71,7 +71,7 @@ public class Program
                               -a | --archive  : 履歴を表示させたい場合
                               -f | --finish   : 終了したい場合
                               -h | --help     : helpを表示 
-                              -m | --mycomment: 自分で投稿したコメントを表示
+                              -y | --yourcomment: 自分で投稿したコメントを表示
                           """);
 
         //ループの継続を制御する変数
@@ -106,8 +106,8 @@ public class Program
                     CommandProcesser.ShowHelp();
                     break;
                 //-m or --mycommentが入力されると自身の投稿したコメントを表示
-                case Direction.MyCommnet:
-                    client.ShowMyCommentAsync(guid);
+                case Direction.YourCommnet:
+                    client.ShowYourCommentAsync(guid);
                     break;
                 // TODO: カスタム構造体を使用することで、コメントとハンドルネームを一緒に保持することができると思います。
                 //CHECKED: カスタム構造体を用いた形式へ変更した。
