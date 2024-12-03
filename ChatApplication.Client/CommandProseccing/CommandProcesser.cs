@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ChatApplication.ServiceDefinition.CommentInformation;
 
 namespace ChatApplication.Client.CommandProseccing;
 public static class CommandProcesser

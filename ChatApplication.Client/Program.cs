@@ -1,9 +1,8 @@
-﻿using ChatApplication.Client.Distinguishers;
-using ChatApplication.Client.CommandProseccing;
+﻿using ChatApplication.Client.CommandProseccing;
+using ChatApplication.Client.Distinguishers;
 using ChatApplication.ServiceDefinition;
 using Grpc.Net.Client;
 using MagicOnion.Client;
-using static ChatApplication.ServiceDefinition.CommentInformation;
 
 namespace ChatApplication.Client;
 
