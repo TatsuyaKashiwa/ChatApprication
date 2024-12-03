@@ -119,7 +119,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         }
     }
 
-    public async UnaryResult<List<string>> GetMyCommnetAsync(string guid) 
+    public async UnaryResult<List<string>> GetMyCommentAsync(string guid) 
     {
         return _comments
             .Where(x => x.Guid == guid)

@@ -43,4 +43,13 @@ public static class CommandProcesser
             Guid = guid,
         };
     }
+
+    public static async void ShowMyCommentAsync(this IChatService client, string guid)
+    {
+        var comments = await client.GetMyCommentAsync(guid);
+        foreach (var mycomment in comments)
+        {
+            Console.WriteLine(mycomment);
+        }
+    }
 }

@@ -105,6 +105,10 @@ public class Program
                 case Direction.Help:
                     CommandProcesser.ShowHelp();
                     break;
+                //-m or --mycommentが入力されると自身の投稿したコメントを表示
+                case Direction.MyCommnet:
+                    client.ShowMyCommentAsync(guid);
+                    break;
                 // TODO: カスタム構造体を使用することで、コメントとハンドルネームを一緒に保持することができると思います。
                 //CHECKED: カスタム構造体を用いた形式へ変更した。
                 default:

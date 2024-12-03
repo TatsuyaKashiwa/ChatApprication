@@ -19,6 +19,10 @@ public static class EntryDistinguisher
         {
             return Direction.Help;
         }
+        else if (Regex.IsMatch(comment, "^-m$|^--mycomment$"))
+        {
+            return Direction.MyCommnet;
+        }
         else 
         {
             return Direction.Comment;
