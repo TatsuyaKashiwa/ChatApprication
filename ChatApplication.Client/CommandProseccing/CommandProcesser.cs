@@ -1,10 +1,5 @@
 ﻿using ChatApplication.ServiceDefinition;
 using MagicOnion;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChatApplication.Client.CommandProseccing;
 public static class CommandProcesser
@@ -34,7 +29,7 @@ public static class CommandProcesser
                           """);
     }
 
-    public static CommentInformation SetCommentInformation(this string comment, string handleName, string guid) 
+    public static CommentInformation SetCommentInformation(this string comment, string handleName, string guid)
     {
         return new CommentInformation
         {

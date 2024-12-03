@@ -3,21 +3,21 @@ using MessagePack;
 
 namespace ChatApplication.ServiceDefinition;
 
-    [MessagePackObject]
-    public struct CommentInformation 
-    {
-        [Key(0)]
-        public string Name { get; set; }
-        
-        [Key(1)]
-        public string Guid { get; set; }
-        
-        [Key(2)]
-        public string Comment { get; set; }
-    }
+[MessagePackObject]
+public struct CommentInformation
+{
+    [Key(0)]
+    public string Name { get; set; }
 
-    public interface IChatService : IService<IChatService>
-    {
+    [Key(1)]
+    public string Guid { get; set; }
+
+    [Key(2)]
+    public string Comment { get; set; }
+}
+
+public interface IChatService : IService<IChatService>
+{
     //名前の重複を調べる
     public UnaryResult<bool> ExistsName(string handlename);
 

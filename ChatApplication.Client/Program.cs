@@ -45,25 +45,25 @@ public class Program
         // TODO: 命名規則に従って変数名を変更する
         // CHECKED: キャメルケースへ変更を行った
         var isNameExists = true;
-        var handleName ="";
+        var handleName = "";
         while (isNameExists)
         {
-             Console.WriteLine("ハンドルネームを入力してください");
+            Console.WriteLine("ハンドルネームを入力してください");
 
-             // TODO: 命名規則に従って変数名を変更する
-             //CHECKED: キャメルケースへ変更を行った
-             handleName = Console.ReadLine();
+            // TODO: 命名規則に従って変数名を変更する
+            //CHECKED: キャメルケースへ変更を行った
+            handleName = Console.ReadLine();
 
-             // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
-             // CHECKED :ハンドルネームの重複の確認を分離した
-             isNameExists = await client.ExistsName(handleName); ;
+            // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
+            // CHECKED :ハンドルネームの重複の確認を分離した
+            isNameExists = await client.ExistsName(handleName); ;
         }
 
-         // ユーザ情報登録時にサーバからGUIDが発行される
-         var guid = await client.RegisterClientData(handleName);
+        // ユーザ情報登録時にサーバからGUIDが発行される
+        var guid = await client.RegisterClientData(handleName);
 
-         //ストリーム(ClientStreamingResult)作成
-         var streaming = await client.SaveCommentAsync();
+        //ストリーム(ClientStreamingResult)作成
+        var streaming = await client.SaveCommentAsync();
 
         //入力受付前にHelpを一度表示
         Console.WriteLine("""
@@ -90,10 +90,10 @@ public class Program
             // TODO: 下記の処理の分岐を Swhich 式での記述を検討してみて
             //       それぞれの処理をメソッドとして切り出すと可読性が向上します。
             //CHECKED: switch式は返却値が必須とのことでしたのでswitch文で実装しました。
-            switch (direction) 
+            switch (direction)
             {
                 //"-a or --archive"が入力されると履歴表示
-                case Direction.Archive: 
+                case Direction.Archive:
                     client.ShowArchiveAsync();
                     break;
                 //"-f or --finish"が入力されると終了処理

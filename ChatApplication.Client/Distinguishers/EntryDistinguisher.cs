@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace ChatApplication.Client.Distinguishers;
 public static class EntryDistinguisher
@@ -23,7 +22,7 @@ public static class EntryDistinguisher
         {
             return Direction.YourCommnet;
         }
-        else 
+        else
         {
             return Direction.Comment;
         }
