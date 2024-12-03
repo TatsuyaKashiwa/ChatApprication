@@ -40,7 +40,7 @@ public class Program
         //       ログイン等の返り値として付与したほうが良いのでは？
         //       生成はサービスであるメリットがない
         //GUID取得
-        var guid = await client.GetMyGuid();
+        var guide = await client.ExistsName();
 
     //GUID設定
     // TODO: 命名規則に従って変数名を変更する
@@ -56,8 +56,10 @@ public class Program
             handleName = Console.ReadLine();
 
             // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
-            isNameExists = await client.RegisterClientData(handleName, guid);
+            isNameExists = await client.RegisterClientData(handleName);
         }
+
+        var guid = await client.RegisterClientData(handleName);
 
         //ストリーム(ClientStreamingResult)作成
         var streaming = await client.SaveCommentAsync();

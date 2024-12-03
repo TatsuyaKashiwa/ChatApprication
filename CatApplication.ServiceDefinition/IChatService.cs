@@ -18,11 +18,11 @@ namespace ChatApplication.ServiceDefinition;
 
     public interface IChatService : IService<IChatService>
     {
-    //GUIDを発行
-    public UnaryResult<string> GetMyGuid();
+    //名前の重複を調べる
+    public UnaryResult<bool> ExistsName(string handlename);
 
     //クライアント情報を設定
-    public UnaryResult<bool> RegisterClientData(string handlename, string guid);
+    public UnaryResult<bool> RegisterClientData(string handlename);
 
     //ClientStreamingならびにコメント保管
     public Task<ClientStreamingResult<CommentInformation, bool>> SaveCommentAsync();

@@ -44,8 +44,9 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// </remarks>
     private Object _Locker = new();
 
-    //クライアント情報を保持するクラス
-    private static List<ClientData> _clientDataSet = [];
+    //クライアント情報を保持するディクショナリ
+    //登録順は問わないのでディクショナリにした
+    private static Dictionary<string, string> _clientDataSet = [];
 
     /// <summary>
     /// クライアントから投稿されたコメントを保存するList
@@ -56,9 +57,9 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     private static List<CommentInformation> _comments = [];
 
     //GUIDを取得してクライアントへ返却
-    public async UnaryResult<string> GetMyGuid()
+    public async UnaryResult<bool> GetMyGuid(string handlename)
     {
-        return Guid.NewGuid().ToString();
+        return _clientDataSet.ContainsValue(handlename);
     }
 
 
@@ -78,29 +79,17 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// Listに追加してfalseを返す。
     /// falseの分岐の処理はstaticな変数へのアクセス・変更となるのでlockを掛けた
     /// </remarks>
-    public async UnaryResult<bool> RegisterClientData(string handlename, string guid)
+    public async UnaryResult<string> RegisterClientData(string handlename)
     {
-        var isNameExists = _clientDataSet
-            .Select(x => x.ClientName)
-            .Any(x => x == handlename);
-
-        if (isNameExists)
+        var guid = Guid.NewGuid().ToString();
+        lock (this._Locker)
         {
-            return true;
+            // TODO: 重複に対応する仕組みを検討すること、dictionary で管理するなど
+            // TODO: _guid が引数で渡せないとあるが、カスタム構造体か文字列の前置詞として追記を試してみては？
+            //       引数を string にしていることが要因なのでは？
+            _clientDataSet.Add(guid, handlename);
         }
-        else
-        {
-            lock (this._Locker)
-            {
-                // TODO: 重複に対応する仕組みを検討すること、dictionary で管理するなど
-                // TODO: _guid が引数で渡せないとあるが、カスタム構造体か文字列の前置詞として追記を試してみては？
-                //       引数を string にしていることが要因なのでは？
-                _guid = guid;
-                var clientData = new ClientData { ClientName = handlename, ClientGuid = _guid };
-                _clientDataSet.Add(clientData);
-            }
-            return false;
-        }
+        return guid;
     }
 
     /// <summary>
@@ -122,8 +111,8 @@ public class ChatService : ServiceBase<IChatService>, IChatService
 
         //GUIDに合致するクライアントのハンドルネームを取得する
         var name = _clientDataSet
-            .Where(x => x.ClientGuid == _guid)
-            .Select(x => x.ClientName)
+            .Where(x => x.Key == _guid)
+            .Select(x => x.Value)
             .Single();
 
         //コメント追加時に(はラムダ式の式部分のみが)実行される
