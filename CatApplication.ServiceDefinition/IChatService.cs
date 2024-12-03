@@ -27,6 +27,9 @@ namespace ChatApplication.ServiceDefinition;
     //ClientStreamingならびにコメント保管
     public Task<ClientStreamingResult<CommentInformation, bool>> SaveCommentAsync();
 
-    //コメント履歴表示
+    //コメント履歴取得
     public UnaryResult<List<CommentInformation>> GetArchiveAsync();
+
+    //自身のコメント履歴取得
+    public UnaryResult<List<string>> GetMyCommnetAsync();
 }
