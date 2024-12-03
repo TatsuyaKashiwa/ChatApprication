@@ -27,9 +27,10 @@ public static class CommandProcesser
     public static void ShowHelp()
     {
         Console.WriteLine("""
-                            -a | --archive : 履歴を表示させたい場合
-                            -f | --finish  : 終了したい場合
-                            -h | --help    : helpを表示 
+                            -a | --archive  : 履歴を表示させたい場合
+                            -f | --finish   : 終了したい場合
+                            -h | --help     : helpを表示
+                            -m | --mycomment: 自分で投稿したコメントを表示
                           """);
     }
 

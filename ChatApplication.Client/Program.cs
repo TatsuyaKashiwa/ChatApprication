@@ -19,6 +19,7 @@ public enum Direction
     Archive,
     Finish,
     Help,
+    MyCommnet,
     Comment,
 };
 
@@ -67,9 +68,10 @@ public class Program
         //入力受付前にHelpを一度表示
         Console.WriteLine("""
                               コメントを入力してください。
-                              -a | --archive : 履歴を表示させたい場合
-                              -f | --finish  : 終了したい場合
-                              -h | --help    : helpを表示 
+                              -a | --archive  : 履歴を表示させたい場合
+                              -f | --finish   : 終了したい場合
+                              -h | --help     : helpを表示 
+                              -m | --mycomment: 自分で投稿したコメントを表示
                           """);
 
         //ループの継続を制御する変数
