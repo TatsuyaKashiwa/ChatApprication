@@ -84,7 +84,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         var context = this.GetClientStreamingContext<CommentInformation, bool>();
 
         //コメント追加時に(はラムダ式の式部分のみが)実行される
-        //xにはクライアントからの投稿の文字列が入る
+        //xにはコメント情報の構造体が入る
         //staticなListへアクセスする際にはlockで排他制御を行う
         await context.ForEachAsync(x =>
         {

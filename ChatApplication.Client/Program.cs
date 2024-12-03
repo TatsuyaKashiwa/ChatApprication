@@ -44,7 +44,10 @@ public class Program
         //GUID設定
         // TODO: 命名規則に従って変数名を変更する
         // CHECKED: キャメルケースへ変更を行った
+        
+        //常に新規アカウントを作成
         var isNameExists = true;
+        
         var handleName = "";
         while (isNameExists)
         {
@@ -56,6 +59,7 @@ public class Program
 
             // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
             // CHECKED :ハンドルネームの重複の確認を分離した
+            //重複がなければメソッドがfalseを返し、次の処理へ進む
             isNameExists = await client.ExistsName(handleName); ;
         }
 
