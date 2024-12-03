@@ -3,7 +3,7 @@
 namespace ChatApplication.Client.Distinguishers;
 public static class EntryDistinguisher
 {
-    //クライアントにて処理に対応する列挙値を返却する
+    //クライアントからの入力に対して、クライアントにて行う処理に対応する列挙値を返却する
     public static Direction DistinguishEntry(this string comment)
     {
         if (Regex.IsMatch(comment, "^-a$|^--archive$"))
