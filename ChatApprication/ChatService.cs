@@ -5,15 +5,6 @@ using MagicOnion.Server;
 namespace ChatApprication.Service;
 
 /// <summary>
-/// クライアント名とGUIDを紐づけるrecord型
-/// </summary>
-public record ClientData
-{
-    public required string ClientName { get; init; }
-    public required string ClientGuid { get; init; }
-}
-
-/// <summary>
 /// 名前とコメントを紐づけるrecord型
 /// </summary>
 /// <remarks>
@@ -28,14 +19,6 @@ public record CommentInformations
 
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
-    /// <summary>
-    /// ユーザID
-    /// </summary>
-    /// <remarks>
-    /// Client(or Duplex)Streamの仕様により引数を渡せないためstaticな変数として保持
-    /// </remarks>
-    private static string _guid = "";
-
     /// <summary>
     /// lockのためのObject
     /// </summary>
@@ -56,17 +39,18 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// </remarks>
     private static List<CommentInformation> _comments = [];
 
-    //GUIDを取得してクライアントへ返却
-    public async UnaryResult<bool> GetMyGuid(string handlename)
+    //名前(クライアント情報ディクショナリのValue)の重複を確認
+    //重複していればtrue
+    public async UnaryResult<bool> ExistsName(string handleName)
     {
-        return _clientDataSet.ContainsValue(handlename);
+        return _clientDataSet.ContainsValue(handleName);
     }
 
 
     /// <summary>
     /// クライアント名とGUIDをセットにしたrecord型をListに登録
     /// </summary>
-    /// <param name="handlename">クライアントから入力されたハンドルネーム</param>
+    /// <param name="handleName">クライアントから入力されたハンドルネーム</param>
     /// <param name="guid">クライアントが保持するGUID</param>
     /// <returns>
     /// true : クライアントでループを継続
@@ -75,11 +59,11 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     /// <remarks>
     /// LINQの結果がtrue(すでに登録されている名前)であればtrueを返し、
     /// falseであれば引数 guid をサーバ側のstaticな_id変数に保持し、
-    /// 引数 handlename とともにrecord型にして
+    /// 引数 handleName とともにrecord型にして
     /// Listに追加してfalseを返す。
     /// falseの分岐の処理はstaticな変数へのアクセス・変更となるのでlockを掛けた
     /// </remarks>
-    public async UnaryResult<string> RegisterClientData(string handlename)
+    public async UnaryResult<string> RegisterClientData(string handleName)
     {
         var guid = Guid.NewGuid().ToString();
         lock (this._Locker)
@@ -87,7 +71,9 @@ public class ChatService : ServiceBase<IChatService>, IChatService
             // TODO: 重複に対応する仕組みを検討すること、dictionary で管理するなど
             // TODO: _guid が引数で渡せないとあるが、カスタム構造体か文字列の前置詞として追記を試してみては？
             //       引数を string にしていることが要因なのでは？
-            _clientDataSet.Add(guid, handlename);
+            //CHECKED: ディクショナリでの管理に変更した
+            //CHECKED: カスタム構造体を利用しstaticなGUID保持変数は削除した。
+            _clientDataSet.Add(guid, handleName);
         }
         return guid;
     }
@@ -108,12 +94,6 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     {
         //context取得からForEachAsyncの上までの領域は最初にSaveCommentAsyncがクライアントから呼ばれたときに一度だけ呼ばれる
         var context = this.GetClientStreamingContext<CommentInformation, bool>();
-
-        //GUIDに合致するクライアントのハンドルネームを取得する
-        var name = _clientDataSet
-            .Where(x => x.Key == _guid)
-            .Select(x => x.Value)
-            .Single();
 
         //コメント追加時に(はラムダ式の式部分のみが)実行される
         //xにはクライアントからの投稿の文字列が入る
@@ -143,13 +123,11 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     ///<remarks>
     ///id・コメントが保存されているListからコメントのみを取り出しクライアントへ返却する
     ///</remarks>
-    public async UnaryResult<List<string>> GetArchiveAsync()
+    public async UnaryResult<List<CommentInformation>> GetArchiveAsync()
     {
         lock (this._Locker)
         {
-            return _comments
-            .Select(x => x.Comment)
-            .ToList();
+            return _comments;
         }
     }
 

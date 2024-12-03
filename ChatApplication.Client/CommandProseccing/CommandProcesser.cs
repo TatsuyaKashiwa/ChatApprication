@@ -12,9 +12,9 @@ public static class CommandProcesser
     public static async void ShowArchiveAsync(this IChatService client)
     {
         var comments = await client.GetArchiveAsync();
-        foreach (var comment in comments)
+        foreach (var nameAndComment in comments)
         {
-            Console.WriteLine(comment);
+            Console.WriteLine($"{nameAndComment.Name}さん : {nameAndComment.Comment}");
         }
     }
 

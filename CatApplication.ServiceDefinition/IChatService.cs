@@ -22,11 +22,11 @@ namespace ChatApplication.ServiceDefinition;
     public UnaryResult<bool> ExistsName(string handlename);
 
     //クライアント情報を設定
-    public UnaryResult<bool> RegisterClientData(string handlename);
+    public UnaryResult<string> RegisterClientData(string handlename);
 
     //ClientStreamingならびにコメント保管
     public Task<ClientStreamingResult<CommentInformation, bool>> SaveCommentAsync();
 
     //コメント履歴表示
-    public UnaryResult<List<string>> GetArchiveAsync();
+    public UnaryResult<List<CommentInformation>> GetArchiveAsync();
 }

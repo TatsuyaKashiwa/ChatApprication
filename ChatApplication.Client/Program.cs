@@ -39,30 +39,32 @@ public class Program
         // TODO: guid はあくまでサービスが各クライアントを識別するためのモノで
         //       ログイン等の返り値として付与したほうが良いのでは？
         //       生成はサービスであるメリットがない
-        //GUID取得
-        var guide = await client.ExistsName();
+        //CHECKED: GUIDの発行をユーザ登録の返り値に変更した
 
-    //GUID設定
-    // TODO: 命名規則に従って変数名を変更する
-    // CHECKED: キャメルケースへ変更を行った
-    var isNameExists = true;
+
+        //GUID設定
+        // TODO: 命名規則に従って変数名を変更する
+        // CHECKED: キャメルケースへ変更を行った
+        var isNameExists = true;
         var handleName ="";
         while (isNameExists)
         {
-            Console.WriteLine("ハンドルネームを入力してください");
+             Console.WriteLine("ハンドルネームを入力してください");
 
-            // TODO: 命名規則に従って変数名を変更する
-            //CHECKED: キャメルケースへ変更を行った
-            handleName = Console.ReadLine();
+             // TODO: 命名規則に従って変数名を変更する
+             //CHECKED: キャメルケースへ変更を行った
+             handleName = Console.ReadLine();
 
-            // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
-            isNameExists = await client.RegisterClientData(handleName);
+             // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
+             // CHECKED :ハンドルネームの重複の確認を分離した
+             isNameExists = await client.ExistsName(handleName); ;
         }
 
-        var guid = await client.RegisterClientData(handleName);
+         // ユーザ情報登録時にサーバからGUIDが発行される
+         var guid = await client.RegisterClientData(handleName);
 
-        //ストリーム(ClientStreamingResult)作成
-        var streaming = await client.SaveCommentAsync();
+         //ストリーム(ClientStreamingResult)作成
+         var streaming = await client.SaveCommentAsync();
 
         //入力受付前にHelpを一度表示
         Console.WriteLine("""
@@ -105,7 +107,7 @@ public class Program
                     break;
                 // TODO: カスタム構造体を使用することで、コメントとハンドルネームを一緒に保持することができると思います。
                 default:
-                    var commentInformation = description.SetCommentInformation(handleName , guid); ;
+                    var commentInformation = description.SetCommentInformation(handleName, guid);
                     await streaming.RequestStream.WriteAsync(commentInformation);
                     break;
             }
