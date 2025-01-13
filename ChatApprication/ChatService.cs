@@ -6,12 +6,7 @@ namespace ChatApprication.Service;
 
 public class ChatService : ServiceBase<IChatService>, IChatService
 {
-    /// <summary>
-    /// lockのためのObject
-    /// </summary>
-    /// <remarks>
-    /// lock用ObjectのインスタンスとしてObject型の変数を用意
-    /// </remarks>
+    // lock用Object
     private Object _Locker = new();
 
     //クライアント情報を保持するディクショナリ
@@ -19,12 +14,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     //{guid, handleName}
     private static Dictionary<string, string> _clientDataSet = [];
 
-    /// <summary>
-    /// クライアントから投稿されたコメントを保存するList
-    /// </summary>
-    /// <remarks>
-    /// すべてのクライアントからのコメントを保存するためstaticなフィールドとした
-    /// </remarks>
+    // すべてのクライアントからのコメントを保存するためstaticなフィールドとした
     private static List<CommentInformation> _comments = [];
 
     //名前(クライアント情報ディクショナリのValue)の重複を確認
@@ -35,32 +25,12 @@ public class ChatService : ServiceBase<IChatService>, IChatService
     }
 
 
-    /// <summary>
-    /// クライアント名とGUIDをセットにしたrecord型をListに登録
-    /// </summary>
-    /// <param name="handleName">クライアントから入力されたハンドルネーム</param>
-    /// <param name="guid">クライアントが保持するGUID</param>
-    /// <returns>
-    /// true : クライアントでループを継続
-    /// false : クライアントでループを抜けてClientStream接続へ進む
-    /// </returns>
-    /// <remarks>
-    /// LINQの結果がtrue(すでに登録されている名前)であればtrueを返し、
-    /// falseであれば引数 guid をサーバ側のstaticな_id変数に保持し、
-    /// 引数 handleName とともにrecord型にして
-    /// Listに追加してfalseを返す。
-    /// falseの分岐の処理はstaticな変数へのアクセス・変更となるのでlockを掛けた
-    /// </remarks>
+    //guidとクライアントから送られたハンドルネームを対にしてディクショナリに保存
     public async UnaryResult<string> RegisterClientData(string handleName)
     {
         var guid = Guid.NewGuid().ToString();
         lock (this._Locker)
         {
-            // TODO: 重複に対応する仕組みを検討すること、dictionary で管理するなど
-            // TODO: _guid が引数で渡せないとあるが、カスタム構造体か文字列の前置詞として追記を試してみては？
-            //       引数を string にしていることが要因なのでは？
-            //CHECKED: ディクショナリでの管理に変更した
-            //CHECKED: カスタム構造体を利用しstaticなGUID保持変数は削除した。
             _clientDataSet.Add(guid, handleName);
         }
         return guid;
@@ -88,10 +58,6 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         //staticなListへアクセスする際にはlockで排他制御を行う
         await context.ForEachAsync(x =>
         {
-            // TODO: typo
-            //CHECKED: 修正しました
-            //var idAndComment = new CommentInformations() { PostedClientName = name, Comment = $"{name}さん ; {x}" };
-            lock (this._Locker)
             {
                 _comments.Add(x);
             }
@@ -119,6 +85,7 @@ public class ChatService : ServiceBase<IChatService>, IChatService
         }
     }
 
+    //実行したクライアント自身のコメントを表示する
     public async UnaryResult<List<string>> GetYourCommentAsync(string guid)
     {
         lock (this._Locker)

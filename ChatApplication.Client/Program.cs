@@ -28,37 +28,24 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        // TODO: json ファイルから設定を読み込むように変更する
         //チャネル作成
         var channel = GrpcChannel.ForAddress("https://localhost:7101");
 
         //クライアントインスタンス作成
         var client = MagicOnionClient.Create<IChatService>(channel);
 
-        // TODO: guid はあくまでサービスが各クライアントを識別するためのモノで
-        //       ログイン等の返り値として付与したほうが良いのでは？
-        //       生成はサービスであるメリットがない
-        //CHECKED: GUIDの発行をユーザ登録の返り値に変更した
-
-
-        //GUID設定
-        // TODO: 命名規則に従って変数名を変更する
-        // CHECKED: キャメルケースへ変更を行った
-        
         //常に新規アカウントを作成
         var isNameExists = true;
         
+        //handlenameはコメント投稿時等、Main関数全体で利用するためここで定義
         var handleName = "";
+        
         while (isNameExists)
         {
             Console.WriteLine("ハンドルネームを入力してください");
 
-            // TODO: 命名規則に従って変数名を変更する
-            //CHECKED: キャメルケースへ変更を行った
             handleName = Console.ReadLine();
 
-            // TODO: 登録の前に既にハンドルネームの重複が存在するか検証すること
-            // CHECKED :ハンドルネームの重複の確認を分離した
             //重複がなければメソッドがfalseを返し、次の処理へ進む
             isNameExists = await client.ExistsName(handleName); ;
         }
@@ -91,9 +78,6 @@ public class Program
             //入力に対する指示を受ける
             var direction = description.DistinguishEntry();
 
-            // TODO: 下記の処理の分岐を Swhich 式での記述を検討してみて
-            //       それぞれの処理をメソッドとして切り出すと可読性が向上します。
-            //CHECKED: switch式は返却値が必須とのことでしたのでswitch文で実装しました。
             switch (direction)
             {
                 //"-a or --archive"が入力されると履歴表示
@@ -113,8 +97,7 @@ public class Program
                 case Direction.YourCommnet:
                     client.ShowYourCommentAsync(guid);
                     break;
-                // TODO: カスタム構造体を使用することで、コメントとハンドルネームを一緒に保持することができると思います。
-                //CHECKED: カスタム構造体を用いた形式へ変更した。
+                // それ以外の入力はコメントとして認識されServiceDefinitionで定義したカスタム構造体にまとめてサーバへ送る
                 default:
                     var commentInformation = description.SetCommentInformation(handleName, guid);
                     await streaming.RequestStream.WriteAsync(commentInformation);

@@ -3,6 +3,8 @@ using MessagePack;
 
 namespace ChatApplication.ServiceDefinition;
 
+//コメント情報（コメント・投稿者・GUID）をまとめて通信するための構造体
+//CL-SV間でやり取りする独自型はここで定義する
 [MessagePackObject]
 public struct CommentInformation
 {
